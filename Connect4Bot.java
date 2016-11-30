@@ -44,7 +44,7 @@ class Connect4Bot {
     	int beta = betaIn;
     	ArrayList<Board> children = b.getChildren();
     	
-    	if (depth == 0){ //or some terminal state
+    	if (depth == 0 || b.checkBoard()){ //or some terminal state
     		next = b;
     		return next;
     	}
