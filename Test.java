@@ -4,16 +4,17 @@ class Test {
     public static void main (String [] args) {
 	int first = Integer.parseInt(args[0]);
 	
-	Board board = new Board();
 	Connect4Bot c4b = new Connect4Bot(board);
 
 	System.out.println("Welcome to Connect 4");
 
 	int player = 1;
+	Board board;
 
 	while (!board.checkBoard()) {
 	    if (first == 1) {
-	    
+		board = new Board(1);
+
 		System.out.println();
 		board.printBoard();
 
@@ -129,7 +130,8 @@ class Test {
 		}
 	    }
 	    else {
-	    
+		board = new Board(0);
+
 		System.out.println();
 		board.printBoard();
 
@@ -234,7 +236,7 @@ class Test {
 			}
 		    }
 		}
-		if (board.occupied(input))
+		if (board.occupied(input[0], input[1]))
 		    System.out.println("Space taken, please try again");
 		else {
 		    board.move(input, player);

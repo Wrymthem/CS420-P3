@@ -2,15 +2,25 @@ import java.util.*;
 
 class Connect4Bot {
     private Board board;
-    private int [][] weights;
+    private ArrayList <Board> possibleBoards;
 
     Connect4Bot(Board board) {
 	this.board = board;
-	weights = new int[board.getBoard().length][board.getBoard().length];
+	this.possibleBoards = new ArrayList <Board> ();
+    }
+
+    public void getChildren() {
+	for (int i = 0; i < this.board.length; i++) {
+	    for (int j = 0; j < this.board.length; j++) {
+		if (!this.board.occupied(i, j)) {
+		    possibleBoards.add(new Board(this.board, i, j));
+		}
+	    }
+	}
     }
 
     public void updateBoard(Board board) {
-	this.board = board;	
+	this.board = board;
     }
     
     public int[] move() {

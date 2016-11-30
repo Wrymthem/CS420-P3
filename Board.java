@@ -5,16 +5,34 @@ class Board {
 	    "E", "F", "G", "H"};
     private boolean xWin, oWin;
     private int value;
+    private int player;
+    private int turn;
 
-    Board() {
-    xWin = false;
-    oWin = false;
+    Board(int player) {
+	xWin = false;
+	oWin = false;
 	this.board = new char[8][8];
 	initializeBoard();
+	this.player = player;
+	turn = 1;
+    }
+
+    Board(Board board, int row, int col) {
+	this.xWin = false;
+	this.oWin = false;
+	for (int i = 0; i < board.length; i++)
+	    for (int j = 0; j < board.length; j++)
+		this.board[i][j] = board[i][j];
+	this.turn = board.getTurn();
+	this.board.move(row, col);
     }
 
     public char[][] getBoard() {
 	return this.board;
+    }
+
+    public int getTurn() {
+	return this.trun;
     }
 
     public void initializeBoard(){
@@ -152,20 +170,22 @@ class Board {
 	return false;
     }
 
-    public boolean occupied(int [] input) {
-	if (this.board[input[0]][input[1]] == '-')
+    public boolean occupied(int row, int col) {
+	if (this.board[row][col] == '-')
 	    return false;
 	return true;
     }
 
-    public void move(int [] input, int player) {
+    public void move(int row, int col) {
 	char move;
-	
-	if (player == 1)
+
+	if (turn % 2 == 1)
 	    move = 'X';
 	else
 	    move = 'O';
 
-	this.board[input[0]][input[1]] = move;
+	turn++;
+
+	this.board[row][col] = move;
     }
 }
