@@ -1,3 +1,5 @@
+import java.util.ArrayList;
+
 class Board {
 
     private char [][] board;
@@ -7,6 +9,7 @@ class Board {
     private int value;
     private int player;
     private int turn;
+    private int[] lastMove;
 
     Board() {
 	xWin = false;
@@ -20,13 +23,19 @@ class Board {
     Board(Board board, int row, int col) {
 	this.xWin = false;
 	this.oWin = false;
+	lastMove = new int[]{row,col};
+	this.board = new char[8][8];
 	for (int i = 0; i < board.getBoard().length; i++)
 	    for (int j = 0; j < board.getBoard().length; j++)
-		this.board[i][j] = board.getBoard()[i][j];
+	    	this.board[i][j] = board.getBoard()[i][j];
 	this.turn = board.getTurn();
 	this.move(row, col);
+	this.evaluate();
     }
-
+    
+    public int[] getLastMove(){
+    	return lastMove;
+    }
     public char[][] getBoard() {
 	return this.board;
     }
@@ -71,6 +80,20 @@ class Board {
     }
     
     
+    
+    public ArrayList<Board> getChildren() {
+    	ArrayList<Board> children = new ArrayList<Board>();
+    	
+    	for (int i = 0; i < board.length; i++) {
+    	    for (int j = 0; j < board.length; j++) {
+    		if (!this.occupied(i, j)) {
+    		    children.add(new Board(this, i, j));
+    			}
+    	    }
+    	}
+    return children; 
+    }
+    
     /**
      * This will evaluate the value of this position for use in the tree evaluation
      * 
@@ -82,19 +105,26 @@ class Board {
     		for(int j = 0;j<board.length-3; j++){
     			//for X
     			if((board[i][j] !='O')&&(board[i][j+1]!='O')&&(board[i][j+2]!='O')&&(board[i][j+3]!='O')){
-    				value +=5;
+    				value -=1;
     			}
     			//for O
     			if((board[i][j] !='X')&&(board[i][j+1]!='X')&&(board[i][j+2]!='X')&&(board[i][j+3]!='X')){
-    				value -=5;
+    				value +=1;
     			}	
     			//Check open twos
     			if((board[i][j] =='-')&&(board[i][j+1]=='X')&&(board[i][j+2]=='X')&&(board[i][j+3]=='-')){
-    				value +=10;
+    				value +=150;
     			}
     			//for min
     			if((board[i][j] =='-')&&(board[i][j+1]=='O')&&(board[i][j+2]=='O')&&(board[i][j+3]=='-')){
-    				value -=10;
+    				value -=150;
+    			}
+    			//check 4s
+    			if((board[i][j] =='O')&&(board[i][j+1]=='O')&&(board[i][j+2]=='O')&&(board[i][j+3]=='O')){
+    				value -=500000;
+    			}
+    			if((board[i][j] =='X')&&(board[i][j+1]=='X')&&(board[i][j+2]=='X')&&(board[i][j+3]=='X')){
+    				value +=500000;
     			}
     		}
     	}
@@ -103,17 +133,23 @@ class Board {
     		for(int j = 0;j<board.length; j++){
     			//for X
     			if((board[i][j] !='O')&&(board[i+1][j]!='O')&&(board[i+1][j]!='O')&&(board[i+3][j]!='O')){
-    				value +=5;
+    				value -=1;
     			}
     			//for O
     			if((board[i][j] !='X')&&(board[i+1][j]!='X')&&(board[i+2][j]!='X')&&(board[i+3][j]!='X')){
-    				value -=5;
+    				value +=1;
     			}
     			if((board[i][j] =='-')&&(board[i+1][j]=='X')&&(board[i+2][j]=='X')&&(board[i+3][j]=='-')){
-    				value +=10;
+    				value +=150;
     			}
     			if((board[i][j] =='-')&&(board[i+1][j]=='O')&&(board[i+2][j]=='O')&&(board[i+3][j]=='-')){
-    				value -=10;
+    				value -=150;
+    			}
+    			if((board[i][j] =='O')&&(board[i+1][j]=='O')&&(board[i+2][j]=='O')&&(board[i+3][j]=='O')){
+    				value -=500000;
+    			}
+    			if((board[i][j] =='X')&&(board[i+1][j]=='X')&&(board[i+2][j]=='X')&&(board[i+3][j]=='X')){
+    				value +=500000;
     			}
     		}
     	}
@@ -192,4 +228,11 @@ class Board {
 
 	this.board[row][col] = move;
     }
+
+	public void setValue(int minValue) {
+		value = minValue;
+	}
+	public int getValue(){
+		return value;
+	}
 }

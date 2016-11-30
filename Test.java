@@ -2,7 +2,7 @@ import java.util.*;
 
 class Test {
     public static void main (String [] args) {
-	int first = Integer.parseInt(args[0]);
+	int first = 1;
 	
 	Connect4Bot c4b;
 

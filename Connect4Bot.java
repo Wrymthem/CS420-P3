@@ -19,11 +19,68 @@ class Connect4Bot {
 	}
     }
 
-    public Board move() {
-	getChildren();
-	Board minBoard = getMin();
+    public int[] move() {
+    	this.board = alphaBeta(this.board, 3 , Integer.MIN_VALUE, Integer.MAX_VALUE, true);
+    	return this.board.getLastMove();
+    }
+    
+    public static Board max(Board a, Board b){
+    	if (a.getValue() > b.getValue())
+    		return a;
+    	else
+    		return b;
+    }
+    
+    public static Board min(Board a, Board b){
+    	if(a.getValue()< b.getValue())
+    		return a;
+    	else
+    		return b;
     }
 
+    public static Board alphaBeta(Board b , int depth, int alphaIn, int betaIn, boolean maxPlayer){
+    	Board next = new Board();
+    	int alpha = alphaIn;
+    	int beta = betaIn;
+    	ArrayList<Board> children = b.getChildren();
+    	
+    	if (depth == 0){ //or some terminal state
+    		next = b;
+    		return next;
+    	}
+    	if (maxPlayer){
+    		next.setValue(Integer.MIN_VALUE);
+    		for (Board c : children){
+    			next = max(next, alphaBeta(c, depth-1, alpha,beta, false ));
+    			if (alpha < next.getValue())
+    				alpha = next.getValue();
+    			if (beta <= alpha)
+    				break;
+    		}
+    		return next;
+    	}
+    	else{
+    		next.setValue(Integer.MAX_VALUE);
+    		for ( Board c: children){
+    			next = min(next, alphaBeta(c, depth-1, alpha, beta, true));
+    			if (beta> next.getValue())
+    				beta = next.getValue();
+    			if (beta<=alpha)
+    				break;
+    		}
+    		return next;
+    	}
+    	
+    	
+    
+    	
+    	
+    }
+    
+    
+    
+    
+    
     public void updateBoard(Board board) {
 	this.board = board;
     }
