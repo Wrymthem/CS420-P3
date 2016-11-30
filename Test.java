@@ -10,10 +10,11 @@ class Test {
 
 	int player = 1;
 	Board board = new Board();
+	board.initializeBoard();
 
 	while (!board.checkBoard()) {
 	    if (first == 1) {
-		board.setPlayer(1);
+		
 		c4b = new Connect4Bot(board);
 
 		System.out.println();
@@ -131,7 +132,7 @@ class Test {
 		}
 	    }
 	    else {
-		board.setPlayer(0);
+		
 		c4b = new Connect4Bot(board);
 
 		System.out.println();
