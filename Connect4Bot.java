@@ -10,54 +10,22 @@ class Connect4Bot {
     }
 
     public void getChildren() {
-	for (int i = 0; i < this.board.length; i++) {
-	    for (int j = 0; j < this.board.length; j++) {
+	for (int i = 0; i < this.board.getBoard().length; i++) {
+	    for (int j = 0; j < this.board.getBoard().length; j++) {
 		if (!this.board.occupied(i, j)) {
-		    possibleBoards.add(new Board(this.board, i, j));
+		    this.possibleBoards.add(new Board(this.board, i, j));
 		}
 	    }
 	}
+    }
+
+    public Board move() {
+	getChildren();
+	Board minBoard = getMin();
     }
 
     public void updateBoard(Board board) {
 	this.board = board;
-    }
-    
-    public int[] move() {
-	updateWeights();
-
-	ArrayList <int[]> moves = new ArrayList <int[]> ();
-	int max = Integer.MIN_VALUE;
-
-	for (int i = 0; i < weights.length; i++) {
-	    for (int j = 0; j < weights.length; j++) {
-		if (weights[i][j] > max) {
-		    max = weights[i][j];
-		    moves.clear();
-		    int [] temp = {i, j};
-		    moves.add(temp);
-		}
-		if (weights[i][j] == max) {
-		    int [] temp = {i, j};
-		    moves.add(temp);
-		}
-	    }
-	}
-
-	Random r = new Random();
-
-	return moves.get(r.nextInt(moves.size()));
-    }
-
-    public void updateWeights() {
-	for (int i = 0; i < weights.length; i++) {
-	    for (int j = 0; j < weights.length; j++) {
-		if (this.board.getBoard()[i][j] == 0)
-		    weights[i][j] = 5;
-		else
-		    weights[i][j] = Integer.MIN_VALUE;
-	    }
-	} 
     }
     
     public int [][] deepCopy(int [][] board) {
