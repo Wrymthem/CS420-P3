@@ -6,8 +6,17 @@ import java.util.Hashtable;
 class Board implements Comparable<Board>{
 
     private char [][] board;
+    private static final int SIZE = 8;
     private final String [] COL = {"A", "B", "C", "D",
 	    "E", "F", "G", "H"};
+    private final int[][] WEIGHT = {{2,3,4,5,5,4,3,2},
+    								{3,4,5,6,6,5,4,3},
+    								{4,5,6,7,7,6,5,4},
+    								{5,6,7,8,8,7,6,5},
+    								{5,6,7,8,8,7,6,5},
+    								{4,5,6,7,7,6,5,4},
+    								{3,4,5,6,6,5,4,3},
+    								{2,3,4,5,5,4,3,3}};
     
     public static HashSet<Board> memo = new HashSet<Board>();
     private int value;
@@ -18,36 +27,23 @@ class Board implements Comparable<Board>{
     private int[] lastMove;
 
     Board() {
-	
-	this.board = new char[8][8];
-	
-	
-	turn = 1;
+		this.board = new char[8][8];
+		turn = 1;
     }
 
     Board(Board board, int row, int col) {
 	
-	lastMove = new int[]{row,col};
-	this.board = new char[8][8];
-	for (int i = 0; i < board.getBoard().length; i++)
-	    for (int j = 0; j < board.getBoard().length; j++)
-	    	this.board[i][j] = board.getBoard()[i][j];
-	this.turn = board.getTurn();
-	this.move(row, col);
-	this.evaluate();
+		lastMove = new int[]{row,col};
+		this.board = new char[8][8];
+		for (int i = 0; i < board.getBoard().length; i++)
+		    for (int j = 0; j < board.getBoard().length; j++)
+		    	this.board[i][j] = board.getBoard()[i][j];
+		this.turn = board.getTurn();
+		this.move(row, col);
+		this.value = this.evaluate();
     }
     
-    public int[] getLastMove(){
-    	return lastMove;
-    }
-    public char[][] getBoard() {
-	return this.board;
-    }
-
-    public int getTurn() {
-	return this.turn;
-    }
-
+   
   
 
     public void initializeBoard(){
@@ -59,26 +55,24 @@ class Board implements Comparable<Board>{
     	this.hash();	
     }
     
-    public void setBoard(char [][] board) {
-	this.board = board;
-    }
+   
 
     public void printBoard() {
-	for (int i = 0; i < board.length + 1; i++) {
-	    for (int j = 0; j < board.length + 1; j++) {
-		if (i == 0 && j == 0)
-		    System.out.print("   ");
-		else if (i == 0)
-		    System.out.print(" " + j + " ");
-		if (i != 0 && j == 0)
-		    System.out.print(" " + COL[i - 1] + " ");
-
-		if (i != 0 && j != 0) {
-		    System.out.print(" " +board[i-1][j-1] + " ");
+		for (int i = 0; i < board.length + 1; i++) {
+		    for (int j = 0; j < board.length + 1; j++) {
+			if (i == 0 && j == 0)
+			    System.out.print("   ");
+			else if (i == 0)
+			    System.out.print(" " + j + " ");
+			if (i != 0 && j == 0)
+			    System.out.print(" " + COL[i - 1] + " ");
+	
+			if (i != 0 && j != 0) {
+			    System.out.print(" " +board[i-1][j-1] + " ");
+			}
+		    }
+		    System.out.println();
 		}
-	    }
-	    System.out.println();
-	}
     }
     
     
@@ -93,170 +87,114 @@ class Board implements Comparable<Board>{
     			}
     	    }
     	}
-    return children; 
+    	
+    	return children; 
     }
     
     /**
      * This will evaluate the value of this position for use in the tree evaluation
      * 
      */
-    public void evaluate(){
-    	this.value = 0;
-    	//check rows for 4s for X (max player)
-    	for (int i =0; i<board.length;i++){
-    		for(int j = 0;j<board.length; j++){
-    			//////////////////////////////////////////////////// ROWS ////////////////////////////////////////////////
-    			if(j<board.length-1){
-    				if((board[i][j] =='O')&&(board[i][j+1]=='O'))
-    					value-=10;
-    				if((board[i][j] =='X')&&(board[i][j+1]=='X'))
-    					value+=10;
+    public int evaluate(){
+    	int row = this.lastMove[0];
+    	int col = this.lastMove[1];
+    	
+    	int value=0;
+    			if(this.turn%2 == 1){
+    				if(this.checkBoard())
+    					value= Integer.MIN_VALUE;
+    				else if (this.turn == 2)
+    					value = -WEIGHT[this.lastMove[0]][this.lastMove[1]];
+    				else 
+    					value = -scoreMove(row,col)*WEIGHT[this.lastMove[0]][this.lastMove[1]];
     			}
-    			if(j<board.length-2){
-    				if((board[i][j] =='O')&&(board[i][j+1]=='O')&&(board[i][j+2]=='O'))
-    					value-=25;
-    				if((board[i][j] =='X')&&(board[i][j+1]=='X')&&(board[i][j+2]=='X'))
-    					value+=25;
-    				if((board[i][j] =='-')&&(board[i][j+1]=='O')&&(board[i][j+2]=='-'))
-    					value-=3;
-    				if((board[i][j] =='-')&&(board[i][j+1]=='X')&&(board[i][j+2]=='-'))
-    					value+=3;
-    				if((board[i][j] =='0')&&(board[i][j+1]=='-')&&(board[i][j+2]=='0'))
-    					value-=10;
-    				if((board[i][j] =='X')&&(board[i][j+1]=='-')&&(board[i][j+2]=='X'))
-    					value+=10;
-    			}	
-    			if(j<board.length-3){
-    				//for X
-        			if((board[i][j] !='O')&&(board[i][j+1]!='O')&&(board[i][j+2]!='O')&&(board[i][j+3]!='O')){
-        				value +=1;
-        			}
-        			//for O
-        			if((board[i][j] !='X')&&(board[i][j+1]!='X')&&(board[i][j+2]!='X')&&(board[i][j+3]!='X')){
-        				value -=1;
-        			}	
-        			if((board[i][j] =='O')&&(board[i][j+1]=='O')&&(board[i][j+2]=='O')&&(board[i][j+3]=='O')){
-        				value = Integer.MIN_VALUE;
-        				break;
-        			}
-        			//for O
-        			if((board[i][j] =='X')&&(board[i][j+1]=='X')&&(board[i][j+2]=='X')&&(board[i][j+3]=='X')){
-        				value =Integer.MAX_VALUE;
-        				break;
-        			}
-        			if((board[i][j] =='-')&&(board[i][j+1]=='O')&&(board[i][j+2]=='O')&&(board[i][j+3]=='-')){
-        				value -=12;
-        				
-        			}
-        			//for O
-        			if((board[i][j] =='-')&&(board[i][j+1]=='X')&&(board[i][j+2]=='X')&&(board[i][j+3]=='-')){
-        				value +=12;
-        				
-        			}
+    			else{
+    				if(this.checkBoard())
+    					value= Integer.MAX_VALUE;
+    				else if (this.turn == 2)
+    					value = WEIGHT[this.lastMove[0]][this.lastMove[1]];
+    				else
+    					value = scoreMove(row,col)*WEIGHT[this.lastMove[0]][this.lastMove[1]];
     			}
-    			if(j<board.length-4){
-    				if((board[i][j] =='-')&&(board[i][j+1]=='O')&&(board[i][j+2]=='O')&&(board[i][j+3]=='O')&&(board[i][j+4]=='-')){
-        				value -=100;
-        				
-        			}
-        			//for O
-        			if((board[i][j] =='-')&&(board[i][j+1]=='X')&&(board[i][j+2]=='X')&&(board[i][j+3]=='X')&&(board[i][j+4]=='-')){
-        				value += 100;
-        				
-        			}
-    			}
-    			//////////////////////////////////////////// COLS ///////////////////////////////////////////////
-    			if(i<board.length-1){
-    				if((board[i][j] =='O')&&(board[i+1][j]=='O'))
-    					value-=5;
-    				if((board[i][j] =='X')&&(board[i+1][j]=='X'))
-    					value+=5;
-    			}
-    			
-    			
-    			if(i<board.length-2){
-    				if((board[i][j] =='O')&&(board[i+1][j]=='O')&&(board[i+2][j]=='O'))
-    					value-=17;
-    				if((board[i][j] =='X')&&(board[i+1][j]=='X')&&(board[i+2][j]=='X'))
-    					value+=17;
-    				if((board[i][j] =='-')&&(board[i+1][j]=='O')&&(board[i+2][j]=='-'))
-    					value-=1;
-    				if((board[i][j] =='-')&&(board[i+1][j]=='X')&&(board[i+2][j]=='-'))
-    					value+=1;
-    				if((board[i][j] =='O')&&(board[i+1][j]=='-')&&(board[i+2][j]=='O'))
-    					value-=10;
-    				if((board[i][j] =='X')&&(board[i+1][j]=='-')&&(board[i+2][j]=='X'))
-    					value+=10;
-    			}
-    			
-    			if(i<board.length-3){
-	    			//for X
-	    			if((board[i][j] !='O')&&(board[i+1][j]!='O')&&(board[i+1][j]!='O')&&(board[i+3][j]!='O')){
-	    				value +=1;
-	    			}
-	    			//for O
-	    			if((board[i][j] !='X')&&(board[i+1][j]!='X')&&(board[i+2][j]!='X')&&(board[i+3][j]!='X')){
-	    				value -=1;
-	    			}
-	    			if((board[i][j] =='O')&&(board[i+1][j]=='O')&&(board[i+1][j]=='O')&&(board[i+3][j]=='O')){
-	    				value =Integer.MIN_VALUE;
-	    				break;
-	    			}
-	    			//for O
-	    			if((board[i][j] =='X')&&(board[i+1][j]=='X')&&(board[i+2][j]!='X')&&(board[i+3][j]=='X')){
-	    				value =Integer.MAX_VALUE;
-	    				break;
-	    			}
-	    			if((board[i][j] =='-')&&(board[i+1][j]=='O')&&(board[i+1][j]=='O')&&(board[i+3][j]=='-')){
-	    				value -=12;
-	    				
-	    			}
-	    			//for O
-	    			if((board[i][j] =='-')&&(board[i+1][j]=='X')&&(board[i+2][j]!='X')&&(board[i+3][j]=='-')){
-	    				value +=12;
-	    				
-	    			}
-    			}
-    			if(i<board.length-4){
-    				if((board[i][j] =='-')&&(board[i+1][j]=='O')&&(board[i+1][j]=='O')&&(board[i+3][j]=='0')&&(board[i+4][j]=='-')){
-    					value -=100;
-        				
-	    			}
-	    			//for O
-	    			if((board[i][j] =='-')&&(board[i+1][j]=='X')&&(board[i+2][j]!='X')&&(board[i+3][j]=='X')&&(board[i+4][j]=='-')){
-	    				value +=100;
-	    				
-	    			}
-    				
-    			}
-    		}
-    	}
     	alpha = value;
     	beta = value;
+    	return value;
     }
-    public void setAlpha(int alpha){
-    	this.alpha = alpha;
-    }
-    
-    public void setBeta(int beta){
-    	this.beta = beta;
-    }
-    
-    public int getAlpha(){
-    	return alpha;
-    }
-    
-    public int getBeta(){
-    	return beta;
-    }
-    
+    private int scoreMove(int row, int col) {
+		int score=0;
+		
+		//Check to the right
+		if (col<SIZE-1){
+			if (board[row][col+1] == board[row][col]){// 2 in a row
+					score +=10;
+				//check 2 over
+				if (col<SIZE-2){
+					if (board[row][col+2] == board[row][col])//3
+						score +=50;
+					if (board[row][col+2] == '-')
+						score +=25;
+				}
+			}
+		}
+		//Check to the left
+			
+		if (col>0){
+			if (board[row][col-1] == board[row][col]){
+				// 2 in a row
+				score +=10;
+				if (col>1){
+					if (board[row][col-2] == board[row][col])//3
+						score +=50;
+					if (board[row][col-2] == '-')
+						score +=25;
+				}
+			}
+				
+		}
+		
+		//check down
+		if (row<SIZE-1){
+			if (board[row+1][col] == board[row][col]){
+				// 2 in a row
+					score +=10;
+				if (row<SIZE-2){
+					if (board[row+2][col] == board[row][col])//3
+						score +=50;
+					if (board[row+2][col] == '-')
+						score +=25;
+				}
+			}
+		}
+		
+		
+		
+		//check up
+		if (row>0){
+			if (board[row-1][col] == board[row][col]){
+					// 2 in a row
+					score +=10;
+				if (row>1){
+					if (board[row-2][col] == board[row][col])//3
+						score +=20;
+					if (board[row-2][col] == '-')
+						score +=25;
+				}
+			}
+		}
+		
+		
+		
+		return score;
+	}
+
+	
     
     public boolean checkBoard() {
-	if (this.checkRow())
-	    return true;
-	if (this.checkColumn())
-	    return true;
-	return false;
+		if (this.checkRow())
+		    return true;
+		if (this.checkColumn())
+		    return true;
+		return false;
     }
 
     public boolean checkRow() {
@@ -264,63 +202,63 @@ class Board implements Comparable<Board>{
 	    int count = 0;
 	    int check = 0;
 	    for (int j = 0; j < board.length; j++) {
-		if (count == 0 && board[i][j] != '-') {
-		    check = board[i][j];
-		    count++;
-		}
-		else if (board[i][j] == check && check != '-')
-		    count++;
-		else {
-		    count = 0;
-		    check = 0;    
-		}
-		if (count >= 4)
-		    return true;
-	    }
+			if (count == 0 && board[i][j] != '-') {
+			    check = board[i][j];
+			    count++;
+			}
+			else if (board[i][j] == check && check != '-')
+			    count++;
+			else {
+			    count = 0;
+			    check = 0;    
+			}
+			if (count >= 4)
+			    return true;
+		    }
 	}
 	return false;
     }
 
     public boolean checkColumn() {
-	for (int j = 0; j < board.length; j++) {
-	    int count = 0;
-	    int check = 0;
-	    for (int i = 0; i < board.length; i++) {
-		if (count == 0 && board[i][j] != '-') {
-		    check = board[i][j];
-		    count++;
+		for (int j = 0; j < board.length; j++) {
+		    int count = 0;
+		    int check = 0;
+		    for (int i = 0; i < board.length; i++) {
+				if (count == 0 && board[i][j] != '-') {
+				    check = board[i][j];
+				    count++;
+				}
+				else if (board[i][j] == check && check != '-')
+				    count++;
+				else {
+				    count = 0;
+				    check = 0;
+				}
+				if (count >=4)
+				    return true;
+			    }
 		}
-		else if (board[i][j] == check && check != '-')
-		    count++;
-		else {
-		    count = 0;
-		    check = 0;
-		}
-		if (count >=4)
-		    return true;
+		return false;
 	    }
-	}
-	return false;
-    }
-
-    public boolean occupied(int row, int col) {
-	if (this.board[row][col] == '-')
-	    return false;
-	return true;
+	
+	    public boolean occupied(int row, int col) {
+		if (this.board[row][col] == '-')
+		    return false;
+		return true;
     }
 
     public void move(int row, int col) {
-	char move;
-
-	if (turn % 2 == 1)
-	    move = 'X';
-	else
-	    move = 'O';
-
-	turn++;
-
-	this.board[row][col] = move;
-	this.hash();
+		char move;
+	
+		if (turn % 2 == 1)
+		    move = 'X';
+		else
+		    move = 'O';
+	
+		turn++;
+	
+		this.board[row][col] = move;
+		this.hash();
     }
 
     private void hash() {
@@ -339,9 +277,7 @@ class Board implements Comparable<Board>{
     	
     }
     
-    public int getHashCode(){
-    	return hash;
-    }
+   
     
     @Override
     public boolean equals(Object o){
@@ -365,4 +301,36 @@ class Board implements Comparable<Board>{
 	public int getValue(){
 		return value;
 	}
+	public void setAlpha(int alpha){
+    	this.alpha = alpha;
+    }
+    
+    public void setBeta(int beta){
+    	this.beta = beta;
+    }
+    
+    public int getAlpha(){
+    	return alpha;
+    }
+    
+    public int getBeta(){
+    	return beta;
+    }
+    public int getHashCode(){
+    	return hash;
+    }
+    public void setBoard(char [][] board) {
+    	this.board = board;
+    }
+    public int[] getLastMove(){
+    	return lastMove;
+    }
+    public char[][] getBoard() {
+    	return this.board;
+    }
+    public int getTurn() {
+    	return this.turn;
+    }
+
+    
 }

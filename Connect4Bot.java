@@ -91,6 +91,9 @@ class Connect4Bot {
     	
     	if (depth == 0 || b.checkBoard()){ //or some terminal state
     		next = b;
+    		next.setAlpha(alpha);
+    		next.setBeta(beta);
+    		memo.put(next.getHashCode(), next);
     		return next;
     	}
     	
@@ -109,6 +112,7 @@ class Connect4Bot {
     			}
     		}
     		next.setAlpha(alpha);
+    		next.setBeta(beta);
     		memo.put(next.getHashCode(), next);
     		return next;
     	}
@@ -140,6 +144,7 @@ class Connect4Bot {
     			}
     		}
     		next.setBeta(beta);
+    		next.setAlpha(alpha);
     		memo.put(next.getHashCode(), next);
     		return next;
     	}
@@ -155,15 +160,15 @@ class Connect4Bot {
     
     
     public void updateBoard(Board board) {
-	this.board = board;
-    }
-    
-    public int [][] deepCopy(int [][] board) {
-	int [][] temp = new int[board.length][board.length];
-	for (int i = 0; i < board.length; i++)
-	    for (int j = 0; j < board.length; j++)
-		temp[i][j] = board[i][j];
-	return temp;
+		this.board = board;
+	    }
+	    
+	    public int [][] deepCopy(int [][] board) {
+		int [][] temp = new int[board.length][board.length];
+		for (int i = 0; i < board.length; i++)
+		    for (int j = 0; j < board.length; j++)
+			temp[i][j] = board[i][j];
+		return temp;
     }
 
     /*
