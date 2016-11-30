@@ -119,10 +119,10 @@ class Test {
 			}
 		    }
 		}
-		if (board.occupied(input))
+		if (board.occupied(input[0], input[1]))
 		    System.out.println("Space taken, please try again");
 		else {
-		    board.move(input, player);
+		    board.move(input[0], input[1], player);
 		    if (player == 1)
 			player = 2;
 		    else
@@ -239,7 +239,7 @@ class Test {
 		if (board.occupied(input[0], input[1]))
 		    System.out.println("Space taken, please try again");
 		else {
-		    board.move(input, player);
+		    board.move(input[0], input[1], player);
 		    if (player == 1)
 			player = 2;
 		    else
