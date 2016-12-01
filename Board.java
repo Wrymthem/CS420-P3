@@ -262,7 +262,6 @@ class Board implements Comparable<Board>{
 
     private void hash() {
 		hash = Arrays.deepHashCode(this.board);
-		
 	}
 
 	@Override
