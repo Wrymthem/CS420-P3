@@ -101,96 +101,152 @@ class Board implements Comparable<Board>{
     	
     	int value=0;
     			if(this.turn%2 == 1){
-    				if(this.checkBoard())
+    				if(this.checkBoard()||this.isTerminalState())
     					value= Integer.MIN_VALUE;
     				else if (this.turn == 2)
     					value = -WEIGHT[this.lastMove[0]][this.lastMove[1]];
     				else 
-    					value = -scoreMove(row,col);
+    					value = -(scoreMove(row,col) + scoreMove(col,row));
     			}
     			else{
-    				if(this.checkBoard())
+    				if(this.checkBoard()||this.isTerminalState())
     					value= Integer.MAX_VALUE;
     				else if (this.turn == 2)
     					value = WEIGHT[this.lastMove[0]][this.lastMove[1]];
     				else
-    					value = scoreMove(row,col);
+    					value = (scoreMove(row,col) + scoreMove(col,row));
     			}
     	alpha = value;
     	beta = value;
     	return value;
     }
+    
+    public boolean isTerminalState(){
+    	int row, col;
+    	
+    	if(this.lastMove != null){
+	    	 row = this.lastMove[0];
+	    	 col = this.lastMove[1];
+    	}
+    	else
+    		return false;
+    	//Check -000- /////////////////////////////////
+    	//up
+    	if(row>0 && row<SIZE-3)
+    		if(board[row-1][col]=='-' && board[row+1][col]==board[row][col] && board[row+2][col]==board[row][col] && board[row+3][col]=='-')
+    			return true;
+    	if(row>1 && row<SIZE-2)
+    		if(board[row-2][col]=='-' && board[row-1][col]==board[row][col] && board[row+1][col]==board[row][col] && board[row+2][col]=='-')
+    			return true;
+    	if(row>2 && row<SIZE-1)
+    		if(board[row-3][col]=='-' && board[row-2][col]==board[row][col] && board[row-1][col]==board[row][col] && board[row+1][col]=='-')
+    			return true;
+    	// Left -Right
+    	if(col>0 && col<SIZE-3)
+    		if(board[row][col-1]=='-' && board[row][col+1]==board[row][col] && board[row][col+2]==board[row][col] && board[row][col+3]=='-')
+    			return true;
+    	if(col>1 && col<SIZE-2)
+    		if(board[row][col-2]=='-' && board[row][col-1]==board[row][col] && board[row][col+1]==board[row][col] && board[row][col+2]=='-')
+    			return true;
+    	if(col>2 && col<SIZE-1)
+    		if(board[row][col-3]=='-' && board[row][col-2]==board[row][col] && board[row][col-1]==board[row][col] && board[row][col+1]=='-')
+    			return true;
+    	//////////////////////////////////////////////////
+    	/////////////////////////////////////////////////
+    	////     Check       -           -
+    	//                  -00-       -00-  on hold for now
+    	//                   0           0 
+    	//                   -           - 
+        /*   	
+    	if(col>0 && row>0 && col<SIZE-2 && row<SIZE-2){
+    		if(board[row][col-1]=='-' && board[row][col+1]==board[row][col] && board[row][col+2]=='-' && board[row-1][col]=='-' && board[row+1][col]==board[row][col] && board[row+2][col]=='-')
+    			return true;
+    		else if(board[row][col-1]=='-' && board[row][col+1]==board[row][col] && board[row][col+2]=='-' && board[row-1][col+1]=='-' && board[row+1][col+1]==board[row][col] && board[row+2][col+1]=='-')
+    			return true;
+    	}*/
+    	return false;
+    	
+    	
+    	
+    }
+    
+    /**
+     * By running this twice we can check vertical threats by switching rows and columns.  Less writing that way
+     * 
+     * @param row
+     * @param col
+     * @return
+     */
     private int scoreMove(int row, int col) {
 		int score=0;
+		int threatLevelAlpha = 25;
+		int threatLevelBeta = 100;
+		int threatLevelCharlie = 5000;
 		
-		//Check to the right
-		if (col<SIZE-1){
-			if ((board[row][col+1] != board[row][col]) && (board[row][col+1] != '-'))
-				score =5;
-			if (board[row][col+1] == board[row][col]){// 2 in a row
-					score =10;
-				//check 2 over
-				if (col<SIZE-2){
-					if (board[row][col+2] == board[row][col])//3
-						score =50;
-					if (board[row][col+2] == '-')
-						score =25;
-				}
-			}
+		if(col<SIZE-3){
+			if(board[row][col+1]=='-' && board[row][col+2]=='-' && board[row][col+3]=='-')
+				score+=threatLevelAlpha;
+			else if(board[row][col+1]==board[row][col] && board[row][col+2]=='-' && board[row][col+3]=='-')
+				score+=threatLevelBeta;
+			else if(board[row][col+1]=='-' && board[row][col+2]==board[row][col] && board[row][col+3]=='-')
+				score+=threatLevelBeta;
+			else if(board[row][col+1]=='-' && board[row][col+2]=='-' && board[row][col+3]==board[row][col] )
+				score+=threatLevelBeta;
+			else if(board[row][col+1]==board[row][col] && board[row][col+2]==board[row][col] && board[row][col+3]=='-')
+				score+=threatLevelCharlie;
+			else if(board[row][col+1]=='-' && board[row][col+2]==board[row][col] && board[row][col+3]==board[row][col])
+				score+=threatLevelCharlie;
+			else if(board[row][col+1]=='-' && board[row][col+2]=='-' && board[row][col+3]==board[row][col] )
+				score+=threatLevelCharlie;
 		}
-		//Check to the left
-			
-		if (col>0){
-			if ((board[row][col-1] != board[row][col]) && (board[row][col-1] != '-'))
-				score =5;
-			if (board[row][col-1] == board[row][col]){
-				// 2 in a row
-				score =10;
-				if (col>1){
-					if (board[row][col-2] == board[row][col])//3
-						score =50;
-					if (board[row][col-2] == '-')
-						score =25;
-				}
-			}
-				
+		if(col>0 && col<SIZE-2){
+			if(board[row][col-1]=='-' && board[row][col+1]=='-' && board[row][col+2]=='-')
+				score+=threatLevelAlpha;
+			else if(board[row][col-1]==board[row][col] && board[row][col+1]=='-' && board[row][col+2]=='-')
+				score+=threatLevelBeta;
+			else if(board[row][col-1]=='-' && board[row][col+1]==board[row][col] && board[row][col+2]=='-')
+				score+=threatLevelBeta;
+			else if(board[row][col-1]=='-' && board[row][col+1]=='-' && board[row][col+2]==board[row][col] )
+				score+=threatLevelBeta;
+			else if(board[row][col-1]==board[row][col] && board[row][col+1]==board[row][col] && board[row][col+2]=='-')
+				score+=threatLevelCharlie;
+			else if(board[row][col-1]=='-' && board[row][col+1]==board[row][col] && board[row][col+2]==board[row][col])
+				score+=threatLevelCharlie;
+			else if(board[row][col-1]=='-' && board[row][col+1]=='-' && board[row][col+2]==board[row][col] )
+				score+=threatLevelCharlie;	
 		}
-		
-		//check down
-		if (row<SIZE-1){
-			if ((board[row+1][col] != board[row][col]) && (board[row+1][col] != '-'))
-				score =5;
-			if (board[row+1][col] == board[row][col]){
-				// 2 in a row
-					score =10;
-				if (row<SIZE-2){
-					if (board[row+2][col] == board[row][col])//3
-						score =50;
-					if (board[row+2][col] == '-')
-						score =25;
-				}
-			}
+		if(col>1 && col<SIZE-1){
+			if(board[row][col-2]=='-' && board[row][col-1]=='-' && board[row][col+1]=='-')
+				score+=threatLevelAlpha;
+			else if(board[row][col-2]==board[row][col] && board[row][col-1]=='-' && board[row][col+1]=='-')
+				score+=threatLevelBeta;
+			else if(board[row][col-2]=='-' && board[row][col-1]==board[row][col] && board[row][col+1]=='-')
+				score+=threatLevelBeta;
+			else if(board[row][col-2]=='-' && board[row][col-1]=='-' && board[row][col+1]==board[row][col] )
+				score+=threatLevelBeta;
+			else if(board[row][col-2]==board[row][col] && board[row][col-1]==board[row][col] && board[row][col+1]=='-')
+				score+=threatLevelCharlie;
+			else if(board[row][col-2]=='-' && board[row][col-1]==board[row][col] && board[row][col+1]==board[row][col])
+				score+=threatLevelCharlie;
+			else if(board[row][col-2]=='-' && board[row][col-1]=='-' && board[row][col+1]==board[row][col] )
+				score+=threatLevelCharlie;	
 		}
-		
-		
-		
-		//check up
-		if (row>0){
-			if ((board[row-1][col] != board[row][col]) && (board[row-1][col] != '-'))
-				score =5;
-			if (board[row-1][col] == board[row][col]){
-					// 2 in a row
-					score =10;
-				if (row>1){
-					if (board[row-2][col] == board[row][col])//3
-						score =20;
-					if (board[row-2][col] == '-')
-						score =25;
-				}
-			}
+		if(col>2){
+			if(board[row][col-3]=='-' && board[row][col-2]=='-' && board[row][col-1]=='-')
+				score+=threatLevelAlpha;
+			else if(board[row][col-3]==board[row][col] && board[row][col-2]=='-' && board[row][col-1]=='-')
+				score+=threatLevelBeta;
+			else if(board[row][col-3]=='-' && board[row][col-2]==board[row][col] && board[row][col-1]=='-')
+				score+=threatLevelBeta;
+			else if(board[row][col-3]=='-' && board[row][col-2]=='-' && board[row][col-1]==board[row][col] )
+				score+=threatLevelBeta;
+			else if(board[row][col-3]==board[row][col] && board[row][col-2]==board[row][col] && board[row][col-1]=='-')
+				score+=threatLevelCharlie;
+			else if(board[row][col-3]=='-' && board[row][col-2]==board[row][col] && board[row][col-1]==board[row][col])
+				score+=threatLevelCharlie;
+			else if(board[row][col-3]=='-' && board[row][col-2]=='-' && board[row][col-1]==board[row][col] )
+				score+=threatLevelCharlie;	
 		}
-		
-		
 		
 		return score;
 	}
