@@ -274,14 +274,14 @@ class Test {
 		int choiceInt;
 		while(true){
 			System.out.println("----------------------------------------");
-			System.out.println(" Would You Like to Play a Game? ");
+			System.out.print("Would You Like to Play a Game? ");
 			answer = s.nextLine();
 			if (answer.toUpperCase().equals("Y")){
-				System.out.println("Choose from the following options :");
+				System.out.println("Choose from the following options:");
 				System.out.println(" 1. Play Connect 4, computer starts first" );
 				System.out.println(" 2. Play Connect 4, human plays first.");
 				System.out.println(" 3. Global Thermonuclear War. ");
-				System.out.print(" Select :");
+				System.out.print(" Select: ");
 				choice = s.nextLine();
 				try{
 					choiceInt = Integer.parseInt(choice);
@@ -294,10 +294,10 @@ class Test {
 						return 0;
 					}
 					else if (choiceInt == 3){
-						System.out.println("  Wouldn't you prefer a nice game of Chess? ");
+						System.out.println("Wouldn't you prefer a nice game of Chess? ");
 					}
 					else{
-						System.out.println(" Invalid Entry");
+						System.out.println("Invalid Entry");
 					}
 				
 				}
