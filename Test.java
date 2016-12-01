@@ -2,7 +2,7 @@ import java.util.*;
 
 class Test {
     public static void main (String [] args) {
-		int first = 1;
+		int first = getFirst();
 		
 		Connect4Bot c4b;
 	
@@ -10,12 +10,13 @@ class Test {
 	
 		int player = 1;
 		Board board = new Board();
+		board.setTurn(first);
 		board.initializeBoard();
 	
-		while (!board.checkBoard()) {
+		do {
 		    if (first == 1) {
 			
-				c4b = new Connect4Bot(board);
+				c4b = new Connect4Bot(board, false);
 		
 				System.out.println();
 				board.printBoard();
@@ -133,7 +134,7 @@ class Test {
 		    }
 		    else {
 			
-				c4b = new Connect4Bot(board);
+				c4b = new Connect4Bot(board, true);
 		
 				System.out.println();
 				board.printBoard();
@@ -249,7 +250,7 @@ class Test {
 					player = 1;
 				}
 		    }
-		}
+		}while (!board.checkBoard());
 	
 		if (player == 1)
 		    player = 2;
@@ -261,4 +262,47 @@ class Test {
 		System.out.println();
 		System.out.println("Player " + player + " wins!");
     }
+
+	private static int getFirst() {
+		Scanner s = new Scanner(System.in);
+		String answer, choice;
+		int choiceInt;
+		while(true){
+			System.out.println("----------------------------------------");
+			System.out.println(" Would You Like to Play a Game? ");
+			answer = s.nextLine();
+			if (answer.equals("Y") || answer.equals("y")){
+				System.out.println("Choose from the following options :");
+				System.out.println(" 1. Play Connect 4, computer starts first" );
+				System.out.println(" 2. Play Connect 4, human plays first.");
+				System.out.println(" 3. Global Thermonuclear War. ");
+				System.out.print(" Select :");
+				choice = s.nextLine();
+				try{
+					choiceInt = Integer.parseInt(choice);
+					if (choiceInt == 1){
+						
+						return 1;
+					}
+					else if (choiceInt == 2){
+						
+						return 0;
+					}
+					else if (choiceInt == 3){
+						System.out.println("  Wouldn't you prefer a nice game of Chess? ");
+					}
+					else{
+						System.out.println(" Invalid Entry");
+					}
+				
+				}
+				catch(Exception e){
+					System.out.println("Invalid Entry");
+				}
+				
+			}
+				
+			
+		}
+	}
 }
