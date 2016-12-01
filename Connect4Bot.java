@@ -28,10 +28,10 @@ class Connect4Bot {
     
         start = System.currentTimeMillis();
     	
-    	for(int i=1;i<2;i++){	
-	    	/*if ((System.currentTimeMillis()- start)> 5000){
+    	for(int i=1;i<5;i++){	
+	    	if ((System.currentTimeMillis()- start)> 5000){
 				break;
-			}*/
+			}
 	    	if (this.board.getPlayer() == 1)
 	    		temp = alphaBeta(this.board, i , Integer.MIN_VALUE, Integer.MAX_VALUE, true);
 	    	else
