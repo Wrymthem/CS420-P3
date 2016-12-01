@@ -23,12 +23,14 @@ class Board implements Comparable<Board>{
     private int alpha, beta;
     private int player;
     
+    private int currentTurn;
     private int turn;
     private int[] lastMove;
 
     Board() {
 		this.board = new char[8][8];
 		turn = 1;
+		currentTurn = 1;
     }
 
     Board(Board board, int row, int col) {
@@ -37,6 +39,7 @@ class Board implements Comparable<Board>{
 		for (int i = 0; i < board.getBoard().length; i++)
 		    for (int j = 0; j < board.getBoard().length; j++)
 		    	this.board[i][j] = board.getBoard()[i][j];
+		this.currentTurn = board.getCurrentTurn();
 		this.turn = board.getTurn();
 		this.move(row, col);
 		this.value = this.evaluate();
@@ -100,21 +103,32 @@ class Board implements Comparable<Board>{
     	
     	int value=0;
     	
-		if(this.turn%2 == player){
-			if(this.checkBoard())
-				value= Integer.MIN_VALUE;
-			else if (this.turn == 2)
+		if(this.turn%2 == player && player == 0){
+			if(this.checkBoard()) {
+				value= Integer.MAX_VALUE;
+				//System.out.println("Win");
+			}
+			else if (this.currentTurn == 1) {
 				value = WEIGHT[this.lastMove[0]][this.lastMove[1]];
-			else 
-				value = scoreMove(row,col)*WEIGHT[this.lastMove[0]][this.lastMove[1]];
+				//System.out.println("Here 1: " + value);
+			}
+			else {
+				value = scoreMove(row,col);
+			}
 		}
 		else{
-			if(this.checkBoard())
-				value= Integer.MAX_VALUE;
-			else if (this.turn == 2)
-				value = -WEIGHT[this.lastMove[0]][this.lastMove[1]];
-			else
+			if(this.checkBoard()) {
+				value= Integer.MIN_VALUE;
+				//System.out.println("Win");
+			}
+			else if (this.currentTurn == 1) {
 				value = -scoreMove(row,col)*WEIGHT[this.lastMove[0]][this.lastMove[1]];
+				//System.out.println("Here 2");
+			}
+			else {
+				value = -scoreMove(row,col);
+				//System.out.println(value);
+			}
 		}
 		
     	alpha = value;
@@ -123,38 +137,45 @@ class Board implements Comparable<Board>{
     }
     private int scoreMove(int row, int col) {
 		int score=0;
-		boolean t;
 		
 		//Against right wall
 		if (col == SIZE-1) {
-			if (board[row][col] == board[row][col-1])
-				if (board[row][col] == board[row][col-2])
-					if (board[row][col-3] != '-') //if you cannot possibly get a connect 4
-						score -= 1000;
+			if (board[row][col-3] != '-' && board[row][col-3] != board[row][col]) //if you cannot possibly get a connect 4
+				score -= 1000;
+			if (board[row][col] != board[row][col-1] && board[row][col-1] != '-')
+				if (board[row][col-2] != '-' && board[row][col-1] == board[row][col-2])
+					if (board[row][col-3] != '-' && board[row][col-2] == board[row][col-3]) //against wall, enemy about to win
+						score += 10000;
 		}
 		
 		//Against left wall
 		if (col == 0) {
-			if (board[row][col] == board[row][col+1])
-				if (board[row][col] == board[row][col+2])
-					if (board[row][col+3] != '-') //if you cannot possibly get a connect 4
-						score -= 1000;
+			if (board[row][col+3] != '-' && board[row][col+3] != board[row][col]) //if you cannot possibly get a connect 4
+				score -= 1000;
+			else if (board[row][col+1] != '-' && board[row][col+1] != board[row][col])
+				if (board[row][col+2] != '-' && board[row][col+1] == board[row][col+2])
+					if (board[row][col+3] != '-' && board[row][col+2] == board[row][col+3]) //against wall, enemy about to win
+						score += 10000;
 		}
 		
 		//Against bottom
 		if (row == SIZE-1) {
-			if (board[row][col] == board[row-1][col])
-				if (board[row][col] == board[row-2][col])
-					if (board[row-3][col] != '-') //if you cannot possibly get a connect 4
-						score -= 1000;
+			if (board[row-3][col] != '-' && board[row-3][col] != board[row][col]) //if you cannot possibly get a connect 4
+				score -= 1000;
+			else if (board[row-1][col] != '-' && board[row-1][col] != board[row][col])
+				if (board[row-2][col] != '-' && board[row-1][col] == board[row-2][col])
+					if (board[row-3][col] != '-' && board[row-2][col] == board[row-3][col]) //against wall, enemy about to win
+						score += 10000;
 		}
 		
 		//Against top
 		if (row == 0) {
-			if (board[row][col] == board[row+1][col])
-				if (board[row][col] == board[row+2][col])
-					if (board[row+3][col] != '-') //if you cannot possibly get a connect 4
-						score -= 1000;
+			if (board[row+3][col] != '-' && board[row+3][col] != board[row][col]) //if you cannot possibly get a connect 4
+				score -= 1000;
+			else if (board[row+1][col] != '-' && board[row][col] != board[row+1][col])
+				if (board[row+2][col] != '-' && board[row+1][col] == board[row+2][col])
+					if (board[row+3][col] != '-' && board[row+2][col] == board[row+3][col]) //against wall, enemy about to win
+						score += 10000;
 		}
 		
 		//Check to the right
@@ -166,7 +187,7 @@ class Board implements Comparable<Board>{
 						score +=50;
 						if (col<SIZE-3){
 							if (board[row][col+3] == board[row][col])// win
-								score += 1000;
+								score += 7000;
 						}
 					}
 					else if (board[row][col+2] == '-') // 2 allies, 1 empty
@@ -176,7 +197,7 @@ class Board implements Comparable<Board>{
 				}
 			}
 			else if (board[row][col+1] != '-') { // 1 enemy
-				score += 20;
+				score += 40;
 				if (col<SIZE-2) {
 					if (board[row][col+2] == board[row][col+1]) // 2 enemies
 						score += 20;
@@ -185,27 +206,44 @@ class Board implements Comparable<Board>{
 					if (col<SIZE-3) {
 						if (board[row][col+3] == board[row][col]) // sandwich 2 enemies
 							score -= 5;
-						else if (board[row][col+3] == '-') // 2 enemies + empty
-							score += 500;
+						else if (board[row][col+3] == '-') // enemy empty empty
+							score -= 20;
 						else if (board[row][col+3] != board[row][col]) // 3 enemies
-							score += 5000;
+							score += 10000;
 					}
 				}
 			}
-			else // Next to an empty
-				score += 20;
+			else { // Next to an empty
+				score += 10;
+				if (col<SIZE-2) {
+					if (board[row][col+2] == '-') // empty empty
+						score -= 10;
+					else if (board[row][col+2] == board[row][col]) // empty ally
+						score += 20;
+					else { // empty enemy
+						score += 20;
+						if (col<SIZE-3) {
+							if (board[row][col+3] == board[row][col+2]) // empty enemy enemy
+								score += 100;
+							else if (board[row][col+3] == board[row][col] ||
+									board[row][col+3] == '-') // empty enemy ally
+								score -= 20;
+						}
+					}
+				}
+			}
 		}
 		
 		//Check to the left
 		if (col>0){
-			if (board[row][col-1] == board[row][col]){ // 2 allies
+			if (board[row][col-1] == board[row][col]){ // ally
 				score +=20;
 				if (col>1){
-					if (board[row][col-2] == board[row][col]){ // 3 allies
+					if (board[row][col-2] == board[row][col]){ // ally ally
 						score +=50;
 						if (col>2){
 							if (board[row][col-3] == board[row][col])// win
-								score += 1000;
+								score += 7000;
 						}
 					}
 					else if (board[row][col-2] == '-') // 2 allies, 1 empty
@@ -215,7 +253,7 @@ class Board implements Comparable<Board>{
 				}
 			}
 			else if (board[row][col-1] != '-') { // 1 enemy
-				score += 20;
+				score += 40;
 				if (col>1) {
 					if (board[row][col-2] == board[row][col-1]) { // 2 enemies
 						score += 20;
@@ -223,9 +261,9 @@ class Board implements Comparable<Board>{
 							if (board[row][col-3] == board[row][col]) // sandwich 2 enemies
 								score -= 5;
 							else if (board[row][col-3] == '-') // 2 enemies + empty
-								score += 500;
+								score += 10000;
 							else if (board[row][col-3] != board[row][col]) // 3 enemies
-								score += 5000;
+								score += 10000;
 						}
 					}
 					else if (board[row][col-2] == board[row][col]) // sandwich 1 enemy
@@ -235,16 +273,16 @@ class Board implements Comparable<Board>{
 						if (col>2) {
 							if (board[row][col-3] == board[row][col]) // enemy empty ally
 								score -= 10;
-							else if (board[row][col-3] == '-') // 2 enemies + empty
-								score += 500;
+							else if (board[row][col-3] == '-') // enemy empty empty
+								score -= 20;
 							else if (board[row][col-3] != board[row][col]) // enemy empty enemy
-								score += 5000;
+								score += 10000;
 						}
 					}
 				}
 			}
 			else {// Next to an empty
-				score += 20;
+				score += 10;
 				if (col>1) {
 					if (board[row][col-2] == '-') // empty empty
 						score -= 10;
@@ -255,7 +293,8 @@ class Board implements Comparable<Board>{
 						if (col>2) {
 							if (board[row][col-3] == board[row][col-2]) // empty enemy enemy
 								score += 100;
-							else if (board[row][col-3] == board[row][col]) // empty enemy ally
+							else if (board[row][col-3] == board[row][col] ||
+									board[row][col-3] == '-') // empty enemy ally
 								score -= 20;
 						}
 					}
@@ -265,14 +304,16 @@ class Board implements Comparable<Board>{
 		
 		//check down
 		if (row<SIZE-1){
-			if (board[row+1][col] == board[row][col]){ // 2 allies
+			if (board[row+1][col] == board[row][col]){ // ally
 				score +=20;
 				if (row<SIZE-2){
-					if (board[row+2][col] == board[row][col]){ // 3 allies
+					if (board[row+2][col] == board[row][col]){ // ally ally
 						score +=50;
 						if (row<SIZE-3){
+							if (board[row+3][col] == '-')
+								score += 100;
 							if (board[row+3][col] == board[row][col])// win
-								score += 1000;
+								score += 7000;
 						}
 					}
 					else if (board[row+2][col] == '-') // 2 allies, 1 empty
@@ -282,24 +323,42 @@ class Board implements Comparable<Board>{
 				}
 			}
 			else if (board[row+1][col] != '-') { // 1 enemy
-				score += 20;
+				score += 40;
 				if (row<SIZE-2) {
-					if (board[row+2][col] == board[row+1][col]) // 2 enemies
+					if (board[row+2][col] == board[row+1][col]) { // 2 enemies
 						score += 20;
+						if (row<SIZE-3) {
+							if (board[row+3][col] == board[row][col]) // sandwich 2 enemies
+								score -= 5;
+							else if (board[row+3][col] == '-') // 2 enemies + empty
+								score += 10000;
+							else if (board[row+3][col] != board[row][col]) // 3 enemies
+								score += 10000;
+						}
+					}
 					else if (board[row+2][col] == board[row][col]) // sandwich 1 enemy
 						score -= 20;
-					if (row<SIZE-3) {
-						if (board[row+3][col] == board[row][col]) // sandwich 2 enemies
-							score -= 5;
-						else if (board[row+3][col] == '-') // 2 enemies + empty
-							score += 500;
-						else if (board[row+3][col] != board[row][col]) // 3 enemies
-							score += 5000;
+				}
+			}
+			else { // Next to an empty
+				score += 10;
+				if (row<SIZE-2) {
+					if (board[row+2][col] == '-') // empty empty
+						score -= 10;
+					else if (board[row+2][col] == board[row][col]) // empty ally
+						score += 20;
+					else { // empty enemy
+						score += 20;
+						if (row<SIZE-3) {
+							if (board[row+3][col] == board[row+2][col]) // empty enemy enemy
+								score += 100;
+							else if (board[row+3][col] == board[row][col]
+									|| board[row+3][col] == '-') // empty enemy ally || empty enemy empty
+								score -= 20;
+						}
 					}
 				}
 			}
-			else // Next to an empty
-				score += 20;
 		}
 		
 		
@@ -313,7 +372,7 @@ class Board implements Comparable<Board>{
 						score +=50;
 						if (row>2){
 							if (board[row-3][col] == board[row][col])// win
-								score += 1000;
+								score += 7000;
 						}
 					}
 					else if (board[row-2][col] == '-') // 2 allies, 1 empty
@@ -322,40 +381,91 @@ class Board implements Comparable<Board>{
 						score += 10;
 				}
 			}
-			else if (board[row-1][col] != '-') { // 1 enemy
-				score += 20;
+			else if (board[row-1][col] != '-') { // enemy
+				score += 40;
 				if (row>1) {
-					if (board[row-2][col] == board[row-1][col]) // 2 enemies
+					if (board[row-2][col] == board[row-1][col]) { // enemy enemy
 						score += 20;
-					else if (board[row-2][col] == board[row][col]) // sandwich 1 enemy
+						if (row>2) {
+							if (board[row-3][col] == board[row][col]) // enemy enemy ally
+								score -= 5;
+							if (board[row-3][col] == '-') // enemy enemy empty
+								score += 7000;
+							else if (board[row-3][col] != board[row][col]) // enemy enemy enemy
+								score += 10000;
+						}
+					}
+					else if (board[row-2][col] == board[row][col]) // enemy ally
 						score -= 20;
-					if (row>2) {
-						if (board[row-3][col] == board[row][col]) // sandwich 2 enemies
-							score -= 5;
-						if (board[row-3][col] == '-') // 2 enemies + empty
-							score += 500;
-						else if (board[row-3][col] != board[row][col]) // 3 enemies
-							score += 5000;
+					else { // enemy empty
+						score += 20;
+						if (row>2) {
+							if (board[row-3][col] == board[row][col]) // enemy empty ally
+								score -= 5;
+							if (board[row-3][col] == '-') // enemy empty empty
+								score -= 20;
+							else if (board[row-3][col] != board[row][col]) //enemy empty 
+								score += 5000;
+						}
 					}
 				}
 			}
-			else // Next to an empty
-				score += 20;
+			else { // Next to an empty
+				score += 10;
+				if (col<SIZE-2) {
+					if (board[row][col+2] == '-') // empty empty
+						score -= 10;
+					else if (board[row][col+2] == board[row][col]) // empty ally
+						score += 20;
+					else { // empty enemy
+						score += 20;
+						if (col<SIZE-3) {
+							if (board[row][col+3] == board[row][col+2]) // empty enemy enemy
+								score += 100;
+							else if (board[row][col+3] == board[row][col]
+									|| board[row][col+3] == '-') // empty enemy ally
+								score -= 20;
+						}
+					}
+				}
+			}
 		}
 		
 		/*//TESTING
-		if (this.turn >= 9 && board[row][col] == 'O') {
-			System.out.println("Row: " + row + ", Col:" + col);
-			System.out.println("Score: " + score);
+		if (board[row][col] == 'X') {
+			System.out.println("Row: " + row + ", Col:" + col + ", Score: " + score + ", Current Turn: " + currentTurn);
+			System.out.println("Player " + board[row][col]);
 			this.printBoard();
 		}
 		//*/
 		
 		return score;
-		
 	}
 
-	
+	public boolean winCase(int row, int col) {
+		if (0 < row && row < (SIZE-1)) {
+			if (row <= SIZE-2)
+				if (board[row+1][col] == board[row][col] && board[row+2][col] == '-' &&
+						board[row-1][col] == '-')
+					return true;
+			else
+				if (board[row-1][col] == board[row][col] && board[row-2][col] == '-' &&
+					board[row+1][col] == '-')
+				return true;
+		}
+		if (0 < col && col < (SIZE-1)) {
+			if (col <= SIZE-2)
+				if (board[row][col+1] == board[row][col] && board[row][col+2] == '-' &&
+						board[row-1][col] == '-')
+					return true;
+			else
+				if (board[row][col-1] == board[row][col] && board[row][col-2] == '-' &&
+					board[row][col+1] == '-')
+				return true;
+		}
+				
+		return false;
+	}
     
     public boolean checkBoard() {
 		if (this.checkRow())
@@ -478,6 +588,14 @@ class Board implements Comparable<Board>{
     
     public void setPlayer(int player) {
     	this.player = player;
+    }
+    
+    public void incrimentCurrentTurn() {
+    	++this.currentTurn;
+    }
+    
+    public int getCurrentTurn() {
+    	return this.currentTurn;
     }
     
     public int getAlpha(){

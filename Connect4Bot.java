@@ -3,7 +3,7 @@ import java.util.*;
 class Connect4Bot {
     private Board board;
     private ArrayList <Board> possibleBoards;
-    private static int nodesChecked =0;
+    //private static int nodesChecked =0;
     private static Long start;
     private static Hashtable<Integer, Board> memo;
 
@@ -28,15 +28,23 @@ class Connect4Bot {
     
         start = System.currentTimeMillis();
     	
-    	for(int i=1;i<4;i++){	
-	    	if ((System.currentTimeMillis()- start)> 5000){
+    	for(int i=1;i<2;i++){	
+	    	/*if ((System.currentTimeMillis()- start)> 5000){
 				break;
-			}
+			}*/
 	    	if (this.board.getPlayer() == 1)
 	    		temp = alphaBeta(this.board, i , Integer.MIN_VALUE, Integer.MAX_VALUE, true);
 	    	else
 	    		temp = alphaBeta(this.board, i , Integer.MIN_VALUE, Integer.MAX_VALUE, false);
 			System.out.println("Depth:" +i);
+			if (i == 12) {
+				try {
+					Thread.sleep(5000);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+    		}
     	}
     	
     	/* TESTING
@@ -105,7 +113,7 @@ class Connect4Bot {
     		children.sort(null);
     		next.setValue(Integer.MIN_VALUE);
     		for (Board c : children){
-    			nodesChecked++;
+    			//nodesChecked++;
     			next = max(next, alphaBeta(c, depth-1, alpha, beta, false ));
     			if (alpha < next.getAlpha())
     				alpha = next.getAlpha();
@@ -137,7 +145,7 @@ class Connect4Bot {
     		});
     		next.setValue(Integer.MAX_VALUE);
     		for ( Board c: children){
-    			nodesChecked++;
+    			//nodesChecked++;
     			next = min(next, alphaBeta(c, depth-1, alpha, beta, true));
     			if (beta> next.getBeta())
     				beta = next.getBeta();
@@ -159,10 +167,6 @@ class Connect4Bot {
     	
     }
     
-    
-    
-    
-    
     public void updateBoard(Board board) {
 		this.board = board;
 	    }
@@ -174,32 +178,4 @@ class Connect4Bot {
 			temp[i][j] = board[i][j];
 		return temp;
     }
-
-    /* TESTING
-    public static void main (String [] args) {
-	Board board = new Board();
-
-	Connect4Bot c4b = new Connect4Bot(board);
-
-	int player = 1;
-
-	while (!board.checkBoard()) {
-	    c4b.updateBoard(board);
-	    board.move(c4b.move(), player);
-	    if (player == 1)
-		player = 2;
-	    else
-		player = 1;
-	}
-	
-	if (player == 1)
-	    player = 2;
-	else
-	    player = 1;
-
-	board.printBoard();
-	System.out.println();
-	System.out.println("Player " + player + " wins!");
-    }
-    */
 }
