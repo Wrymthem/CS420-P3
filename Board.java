@@ -134,6 +134,11 @@ class Board implements Comparable<Board>{
 						score +=25;
 				}
 			}
+			if (board[row][col+1] == 'O' && this.turn % 2 == 1){
+				score += 20;
+			}
+			else if (board[row][col+1] == 'X' && this.turn % 2 == 0)
+				score -= 20;
 		}
 		//Check to the left
 			
@@ -148,6 +153,11 @@ class Board implements Comparable<Board>{
 						score +=25;
 				}
 			}
+			if (board[row][col-1] == 'O' && this.turn % 2 == 1){
+				score += 20;
+			}
+			else if (board[row][col-1] == 'X' && this.turn % 2 == 0)
+				score -= 20;
 				
 		}
 		
@@ -163,6 +173,11 @@ class Board implements Comparable<Board>{
 						score +=25;
 				}
 			}
+			if (board[row+1][col] == 'O' && this.turn % 2 == 1){
+				score += 20;
+			}
+			else if (board[row+1][col] == 'X' && this.turn % 2 == 0)
+				score -= 20;
 		}
 		
 		
@@ -179,6 +194,11 @@ class Board implements Comparable<Board>{
 						score +=25;
 				}
 			}
+			if (board[row-1][col] == 'O' && this.turn % 2 == 1){
+				score += 20;
+			}
+			else if (board[row-1][col] == 'X' && this.turn % 2 == 0)
+				score -= 20;
 		}
 		
 		
