@@ -1,7 +1,6 @@
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
-import java.util.Hashtable;
 
 class Board implements Comparable<Board>{
 
@@ -22,7 +21,8 @@ class Board implements Comparable<Board>{
     private int value;
     int hash;
     private int alpha, beta;
-   
+    private int player;
+    
     private int turn;
     private int[] lastMove;
 
@@ -99,125 +99,260 @@ class Board implements Comparable<Board>{
     	int col = this.lastMove[1];
     	
     	int value=0;
-    			if(this.turn%2 == 1){
-    				if(this.checkBoard())
-    					value= Integer.MIN_VALUE;
-    				else if (this.turn == 2)
-    					value = -WEIGHT[this.lastMove[0]][this.lastMove[1]];
-    				else 
-    					value = -scoreMove(row,col)*WEIGHT[this.lastMove[0]][this.lastMove[1]];
-    			}
-    			else{
-    				if(this.checkBoard())
-    					value= Integer.MAX_VALUE;
-    				else if (this.turn == 2)
-    					value = WEIGHT[this.lastMove[0]][this.lastMove[1]];
-    				else
-    					value = scoreMove(row,col)*WEIGHT[this.lastMove[0]][this.lastMove[1]];
-    			}
+    	
+		if(this.turn%2 == player){
+			if(this.checkBoard())
+				value= Integer.MIN_VALUE;
+			else if (this.turn == 2)
+				value = WEIGHT[this.lastMove[0]][this.lastMove[1]];
+			else 
+				value = scoreMove(row,col)*WEIGHT[this.lastMove[0]][this.lastMove[1]];
+		}
+		else{
+			if(this.checkBoard())
+				value= Integer.MAX_VALUE;
+			else if (this.turn == 2)
+				value = -WEIGHT[this.lastMove[0]][this.lastMove[1]];
+			else
+				value = -scoreMove(row,col)*WEIGHT[this.lastMove[0]][this.lastMove[1]];
+		}
+		
     	alpha = value;
     	beta = value;
     	return value;
     }
     private int scoreMove(int row, int col) {
 		int score=0;
+		boolean t;
 		
+		//Against right wall
+		if (col == SIZE-1) {
+			if (board[row][col] == board[row][col-1])
+				if (board[row][col] == board[row][col-2])
+					if (board[row][col-3] != '-') //if you cannot possibly get a connect 4
+						score -= 1000;
+		}
 		
+		//Against left wall
+		if (col == 0) {
+			if (board[row][col] == board[row][col+1])
+				if (board[row][col] == board[row][col+2])
+					if (board[row][col+3] != '-') //if you cannot possibly get a connect 4
+						score -= 1000;
+		}
+		
+		//Against bottom
+		if (row == SIZE-1) {
+			if (board[row][col] == board[row-1][col])
+				if (board[row][col] == board[row-2][col])
+					if (board[row-3][col] != '-') //if you cannot possibly get a connect 4
+						score -= 1000;
+		}
+		
+		//Against top
+		if (row == 0) {
+			if (board[row][col] == board[row+1][col])
+				if (board[row][col] == board[row+2][col])
+					if (board[row+3][col] != '-') //if you cannot possibly get a connect 4
+						score -= 1000;
+		}
 		
 		//Check to the right
 		if (col<SIZE-1){
-			if (board[row][col+1] == board[row][col]){// 2 in a row
-					score +=10;
-				//check 2 over
+			if (board[row][col+1] == board[row][col]){ // 2 allies
+					score +=20;
 				if (col<SIZE-2){
-					if (board[row][col+2] == board[row][col]){//3
+					if (board[row][col+2] == board[row][col]){ // 3 allies
 						score +=50;
-						if (board[row][col+3] == board[row][col])//4
-							score += 10000;
+						if (col<SIZE-3){
+							if (board[row][col+3] == board[row][col])// win
+								score += 1000;
+						}
 					}
-					if (board[row][col+2] == '-')
+					else if (board[row][col+2] == '-') // 2 allies, 1 empty
 						score +=25;
+					else // 2 allies, 1 enemy
+						score += 10;
 				}
 			}
-			if (board[row][col+1] == 'O' && this.turn % 2 == 1){
+			else if (board[row][col+1] != '-') { // 1 enemy
 				score += 20;
+				if (col<SIZE-2) {
+					if (board[row][col+2] == board[row][col+1]) // 2 enemies
+						score += 20;
+					else if (board[row][col+2] == board[row][col]) // sandwich 1 enemy
+						score -= 20;
+					if (col<SIZE-3) {
+						if (board[row][col+3] == board[row][col]) // sandwich 2 enemies
+							score -= 5;
+						else if (board[row][col+3] == '-') // 2 enemies + empty
+							score += 500;
+						else if (board[row][col+3] != board[row][col]) // 3 enemies
+							score += 5000;
+					}
+				}
 			}
-			else if (board[row][col+1] == 'X' && this.turn % 2 == 0)
-				score -= 20;
+			else // Next to an empty
+				score += 20;
 		}
+		
 		//Check to the left
-			
 		if (col>0){
-			if (board[row][col-1] == board[row][col]){
-				// 2 in a row
-				score +=10;
+			if (board[row][col-1] == board[row][col]){ // 2 allies
+				score +=20;
 				if (col>1){
-					if (board[row][col-2] == board[row][col]){//3
+					if (board[row][col-2] == board[row][col]){ // 3 allies
 						score +=50;
-						if (board[row][col-3] == board[row][col])//4
-							score += 10000;
+						if (col>2){
+							if (board[row][col-3] == board[row][col])// win
+								score += 1000;
+						}
 					}
-					if (board[row][col-2] == '-')
+					else if (board[row][col-2] == '-') // 2 allies, 1 empty
 						score +=25;
+					else // 2 allies, 1 enemy
+						score += 10;
 				}
 			}
-			if (board[row][col-1] == 'O' && this.turn % 2 == 1){
+			else if (board[row][col-1] != '-') { // 1 enemy
 				score += 20;
+				if (col>1) {
+					if (board[row][col-2] == board[row][col-1]) { // 2 enemies
+						score += 20;
+						if (col>2) {
+							if (board[row][col-3] == board[row][col]) // sandwich 2 enemies
+								score -= 5;
+							else if (board[row][col-3] == '-') // 2 enemies + empty
+								score += 500;
+							else if (board[row][col-3] != board[row][col]) // 3 enemies
+								score += 5000;
+						}
+					}
+					else if (board[row][col-2] == board[row][col]) // sandwich 1 enemy
+						score -= 20;
+					else if (board[row][col-2] == '-') { // enemy + empty
+						score += 20;
+						if (col>2) {
+							if (board[row][col-3] == board[row][col]) // enemy empty ally
+								score -= 10;
+							else if (board[row][col-3] == '-') // 2 enemies + empty
+								score += 500;
+							else if (board[row][col-3] != board[row][col]) // enemy empty enemy
+								score += 5000;
+						}
+					}
+				}
 			}
-			else if (board[row][col-1] == 'X' && this.turn % 2 == 0)
-				score -= 20;
-				
+			else {// Next to an empty
+				score += 20;
+				if (col>1) {
+					if (board[row][col-2] == '-') // empty empty
+						score -= 10;
+					else if (board[row][col-2] == board[row][col]) // empty ally
+						score += 20;
+					else { // empty enemy
+						score += 20;
+						if (col>2) {
+							if (board[row][col-3] == board[row][col-2]) // empty enemy enemy
+								score += 100;
+							else if (board[row][col-3] == board[row][col]) // empty enemy ally
+								score -= 20;
+						}
+					}
+				}
+			}
 		}
 		
 		//check down
 		if (row<SIZE-1){
-			if (board[row+1][col] == board[row][col]){
-				// 2 in a row
-					score +=10;
+			if (board[row+1][col] == board[row][col]){ // 2 allies
+				score +=20;
 				if (row<SIZE-2){
-					if (board[row+2][col] == board[row][col]){//3
+					if (board[row+2][col] == board[row][col]){ // 3 allies
 						score +=50;
-						if (board[row+3][col] == board[row][col])//4
-							score += 10000;
+						if (row<SIZE-3){
+							if (board[row+3][col] == board[row][col])// win
+								score += 1000;
+						}
 					}
-					if (board[row+2][col] == '-')
+					else if (board[row+2][col] == '-') // 2 allies, 1 empty
 						score +=25;
+					else // 2 allies, 1 enemy
+						score += 10;
 				}
 			}
-			if (board[row+1][col] == 'O' && this.turn % 2 == 1){
+			else if (board[row+1][col] != '-') { // 1 enemy
 				score += 20;
+				if (row<SIZE-2) {
+					if (board[row+2][col] == board[row+1][col]) // 2 enemies
+						score += 20;
+					else if (board[row+2][col] == board[row][col]) // sandwich 1 enemy
+						score -= 20;
+					if (row<SIZE-3) {
+						if (board[row+3][col] == board[row][col]) // sandwich 2 enemies
+							score -= 5;
+						else if (board[row+3][col] == '-') // 2 enemies + empty
+							score += 500;
+						else if (board[row+3][col] != board[row][col]) // 3 enemies
+							score += 5000;
+					}
+				}
 			}
-			else if (board[row+1][col] == 'X' && this.turn % 2 == 0)
-				score -= 20;
+			else // Next to an empty
+				score += 20;
 		}
 		
 		
 		
 		//check up
 		if (row>0){
-			if (board[row-1][col] == board[row][col]){
-					// 2 in a row
-					score +=10;
+			if (board[row-1][col] == board[row][col]){ // 2 allies
+				score +=20;
 				if (row>1){
-					if (board[row-2][col] == board[row][col]){//3
+					if (board[row-2][col] == board[row][col]){ // 3 allies
 						score +=50;
-						if (board[row-3][col] == board[row][col])//4
-							score += 10000;
+						if (row>2){
+							if (board[row-3][col] == board[row][col])// win
+								score += 1000;
+						}
 					}
-					if (board[row-2][col] == '-')
+					else if (board[row-2][col] == '-') // 2 allies, 1 empty
 						score +=25;
+					else // 2 allies, 1 enemy
+						score += 10;
 				}
 			}
-			if (board[row-1][col] == 'O' && this.turn % 2 == 1){
+			else if (board[row-1][col] != '-') { // 1 enemy
 				score += 20;
+				if (row>1) {
+					if (board[row-2][col] == board[row-1][col]) // 2 enemies
+						score += 20;
+					else if (board[row-2][col] == board[row][col]) // sandwich 1 enemy
+						score -= 20;
+					if (row>2) {
+						if (board[row-3][col] == board[row][col]) // sandwich 2 enemies
+							score -= 5;
+						if (board[row-3][col] == '-') // 2 enemies + empty
+							score += 500;
+						else if (board[row-3][col] != board[row][col]) // 3 enemies
+							score += 5000;
+					}
+				}
 			}
-			else if (board[row-1][col] == 'X' && this.turn % 2 == 0)
-				score -= 20;
+			else // Next to an empty
+				score += 20;
 		}
 		
-		
+		/*//TESTING
+		if (this.turn >= 9 && board[row][col] == 'O') {
+			System.out.println("Row: " + row + ", Col:" + col);
+			System.out.println("Score: " + score);
+			this.printBoard();
+		}
+		//*/
 		
 		return score;
+		
 	}
 
 	
@@ -341,12 +476,19 @@ class Board implements Comparable<Board>{
     	this.beta = beta;
     }
     
+    public void setPlayer(int player) {
+    	this.player = player;
+    }
+    
     public int getAlpha(){
     	return alpha;
     }
     
     public int getBeta(){
     	return beta;
+    }
+    public int getPlayer(){
+    	return player;
     }
     public int getHashCode(){
     	return hash;

@@ -28,20 +28,26 @@ class Connect4Bot {
     
         start = System.currentTimeMillis();
     	
-    	for(int i=1;i<5;i++){	
+    	for(int i=1;i<4;i++){	
 	    	if ((System.currentTimeMillis()- start)> 5000){
 				break;
 			}
-			temp = alphaBeta(this.board, i , Integer.MIN_VALUE, Integer.MAX_VALUE, true);
+	    	if (this.board.getPlayer() == 1)
+	    		temp = alphaBeta(this.board, i , Integer.MIN_VALUE, Integer.MAX_VALUE, true);
+	    	else
+	    		temp = alphaBeta(this.board, i , Integer.MIN_VALUE, Integer.MAX_VALUE, false);
 			System.out.println("Depth:" +i);
     	}
+    	
+    	/* TESTING
     	Hashtable<Integer, Board> t = new Hashtable<Integer, Board>(); 
     	t= memo;
     	System.out.println("Table Size: " +t.size());
-    	this.board = temp;
     	System.out.println(this.board.getValue());
     	System.out.println(nodesChecked);
     	nodesChecked =0;
+    	*/
+    	this.board = temp;
     	return this.board.getLastMove();
     	
     	
@@ -169,7 +175,7 @@ class Connect4Bot {
 		return temp;
     }
 
-    /*
+    /* TESTING
     public static void main (String [] args) {
 	Board board = new Board();
 

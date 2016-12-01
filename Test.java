@@ -2,7 +2,12 @@ import java.util.*;
 
 class Test {
     public static void main (String [] args) {
-		int first = 1;
+    	int first;
+    	
+		if (Integer.parseInt(args[0]) == 1)
+			first = 1;
+		else
+			first = 0;
 		
 		Connect4Bot c4b;
 	
@@ -14,6 +19,7 @@ class Test {
 	
 		while (!board.checkBoard()) {
 		    if (first == 1) {
+		    	board.setPlayer(first);
 			
 				c4b = new Connect4Bot(board);
 		
@@ -21,7 +27,7 @@ class Test {
 				board.printBoard();
 		
 				System.out.println();
-				System.out.println("Player " + player + "'s turn");
+				System.out.println("Player " + player + "'s turn [" + board.getTurn() + "]");
 		
 				int [] input = new int [2];
 		
@@ -132,6 +138,7 @@ class Test {
 				}
 		    }
 		    else {
+		    	board.setPlayer(first);
 			
 				c4b = new Connect4Bot(board);
 		
@@ -244,9 +251,9 @@ class Test {
 				else {
 				    board.move(input[0], input[1]);
 				    if (player == 1)
-					player = 2;
+				    	player = 2;
 				    else
-					player = 1;
+				    	player = 1;
 				}
 		    }
 		}
