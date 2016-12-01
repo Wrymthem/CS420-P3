@@ -106,7 +106,7 @@ class Board implements Comparable<Board>{
     				else if (this.turn == 2)
     					value = -WEIGHT[this.lastMove[0]][this.lastMove[1]];
     				else 
-    					value = -scoreMove(row,col)*WEIGHT[this.lastMove[0]][this.lastMove[1]];
+    					value = -scoreMove(row,col);
     			}
     			else{
     				if(this.checkBoard())
@@ -114,7 +114,7 @@ class Board implements Comparable<Board>{
     				else if (this.turn == 2)
     					value = WEIGHT[this.lastMove[0]][this.lastMove[1]];
     				else
-    					value = scoreMove(row,col)*WEIGHT[this.lastMove[0]][this.lastMove[1]];
+    					value = scoreMove(row,col);
     			}
     	alpha = value;
     	beta = value;
@@ -125,28 +125,32 @@ class Board implements Comparable<Board>{
 		
 		//Check to the right
 		if (col<SIZE-1){
+			if ((board[row][col+1] != board[row][col]) && (board[row][col+1] != '-'))
+				score =5;
 			if (board[row][col+1] == board[row][col]){// 2 in a row
-					score +=10;
+					score =10;
 				//check 2 over
 				if (col<SIZE-2){
 					if (board[row][col+2] == board[row][col])//3
-						score +=50;
+						score =50;
 					if (board[row][col+2] == '-')
-						score +=25;
+						score =25;
 				}
 			}
 		}
 		//Check to the left
 			
 		if (col>0){
+			if ((board[row][col-1] != board[row][col]) && (board[row][col-1] != '-'))
+				score =5;
 			if (board[row][col-1] == board[row][col]){
 				// 2 in a row
-				score +=10;
+				score =10;
 				if (col>1){
 					if (board[row][col-2] == board[row][col])//3
-						score +=50;
+						score =50;
 					if (board[row][col-2] == '-')
-						score +=25;
+						score =25;
 				}
 			}
 				
@@ -154,14 +158,16 @@ class Board implements Comparable<Board>{
 		
 		//check down
 		if (row<SIZE-1){
+			if ((board[row+1][col] != board[row][col]) && (board[row+1][col] != '-'))
+				score =5;
 			if (board[row+1][col] == board[row][col]){
 				// 2 in a row
-					score +=10;
+					score =10;
 				if (row<SIZE-2){
 					if (board[row+2][col] == board[row][col])//3
-						score +=50;
+						score =50;
 					if (board[row+2][col] == '-')
-						score +=25;
+						score =25;
 				}
 			}
 		}
@@ -170,14 +176,16 @@ class Board implements Comparable<Board>{
 		
 		//check up
 		if (row>0){
+			if ((board[row-1][col] != board[row][col]) && (board[row-1][col] != '-'))
+				score =5;
 			if (board[row-1][col] == board[row][col]){
 					// 2 in a row
-					score +=10;
+					score =10;
 				if (row>1){
 					if (board[row-2][col] == board[row][col])//3
-						score +=20;
+						score =20;
 					if (board[row-2][col] == '-')
-						score +=25;
+						score =25;
 				}
 			}
 		}
