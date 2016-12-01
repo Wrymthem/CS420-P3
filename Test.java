@@ -160,82 +160,82 @@ class Test {
 			}
 			switch (move.charAt(0)) {
 			    case 'A':
-				input[0] = 0;
-				flag = true;
-				break;
+					input[0] = 0;
+					flag = true;
+					break;
 			    case 'B':
-				input[0] = 1;
-				flag = true;
-				break;
+					input[0] = 1;
+					flag = true;
+					break;
 			    case 'C':
-				input[0] = 2;
-				flag = true;
-				break;
+					input[0] = 2;
+					flag = true;
+					break;
 			    case 'D':
-				input[0] = 3;
-				flag = true;
-				break;
+					input[0] = 3;
+					flag = true;
+					break;
 			    case 'E':
-				input[0] = 4;
-				flag = true;
-				break;
+					input[0] = 4;
+					flag = true;
+					break;
 			    case 'F':
-				input[0] = 5;
-				flag = true;
-				break;
+					input[0] = 5;
+					flag = true;
+					break;
 			    case 'G':
-				input[0] = 6;
-				flag = true;
-				break;
+					input[0] = 6;
+					flag = true;
+					break;
 			    case 'H':
-				input[0] = 7;
-				flag = true;
-				break;
+					input[0] = 7;
+					flag = true;
+					break;
 			    default:
-				System.out.println("Incorrect input");
-				System.out.println();
-				flag = false;
-				break;
+					System.out.println("Incorrect input");
+					System.out.println();
+					flag = false;
+					break;
 			}
 		    
 			switch (move.charAt(1)) {
 			    case '1':
-				input[1] = 0;
-				flag = true;
-				break;
+					input[1] = 0;
+					flag = true;
+					break;
 			    case '2':
-				input[1] = 1;
-				flag = true;
-				break;
+					input[1] = 1;
+					flag = true;
+					break;
 			    case '3':
-				input[1] = 2;
-				flag = true;
-				break;
+					input[1] = 2;
+					flag = true;
+					break;
 			    case '4':
-				input[1] = 3;
-				flag = true;
-				break;
+					input[1] = 3;
+					flag = true;
+					break;
 			    case '5':
-				input[1] = 4;
-				flag = true;
-				break;
+					input[1] = 4;
+					flag = true;
+					break;
 			    case '6':
-				input[1] = 5;
-				flag = true;
-				break;
+					input[1] = 5;
+					flag = true;
+					break;
 			    case '7':
-				input[1] = 6;
-				flag = true;
-				break;
+					input[1] = 6;
+					flag = true;
+					break;
 			    case '8':
-				input[1] = 7;
-				flag = true;
-				break;
+					input[1] = 7;
+					flag = true;
+					break;
 			    default:
-				System.out.println("Incorrect input");
-				System.out.println();
-				flag = false;
-				break;
+					System.out.println("Incorrect input");
+					System.out.println();
+					flag = false;
+					break;
 			}
 		    }
 		}

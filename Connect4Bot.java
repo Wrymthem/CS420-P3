@@ -8,19 +8,19 @@ class Connect4Bot {
     private static Hashtable<Integer, Board> memo;
 
     Connect4Bot(Board board) {
-	this.board = board;
-	this.possibleBoards = new ArrayList <Board> ();
-	memo = new Hashtable<Integer, Board>();
+		this.board = board;
+		this.possibleBoards = new ArrayList <Board> ();
+		memo = new Hashtable<Integer, Board>();
     }
 
     public void getChildren() {
-	for (int i = 0; i < this.board.getBoard().length; i++) {
-	    for (int j = 0; j < this.board.getBoard().length; j++) {
-		if (!this.board.occupied(i, j)) {
-		    this.possibleBoards.add(new Board(this.board, i, j));
+		for (int i = 0; i < this.board.getBoard().length; i++) {
+		    for (int j = 0; j < this.board.getBoard().length; j++) {
+				if (!this.board.occupied(i, j)) {
+				    this.possibleBoards.add(new Board(this.board, i, j));
+				}
+		    }
 		}
-	    }
-	}
     }
 
     public int[] move() {
@@ -29,11 +29,11 @@ class Connect4Bot {
         start = System.currentTimeMillis();
     	
     	for(int i=1;i<64-this.board.getTurn();i++){	
-    	if ((System.currentTimeMillis()- start)> 5000){
+	    	if ((System.currentTimeMillis()- start)> 5000){
 				break;
-		}
-        temp = alphaBeta(this.board, i , Integer.MIN_VALUE, Integer.MAX_VALUE, true);
-        System.out.println("Depth:" +i);
+			}
+			temp = alphaBeta(this.board, i , Integer.MIN_VALUE, Integer.MAX_VALUE, true);
+			System.out.println("Depth:" +i);
     	}
     	Hashtable<Integer, Board> t = new Hashtable<Integer, Board>(); 
     	t= memo;

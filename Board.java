@@ -16,7 +16,7 @@ class Board implements Comparable<Board>{
     								{5,6,7,8,8,7,6,5},
     								{4,5,6,7,7,6,5,4},
     								{3,4,5,6,6,5,4,3},
-    								{2,3,4,5,5,4,3,3}};
+    								{2,3,4,5,5,4,3,2}};
     
     public static HashSet<Board> memo = new HashSet<Board>();
     private int value;
@@ -32,7 +32,6 @@ class Board implements Comparable<Board>{
     }
 
     Board(Board board, int row, int col) {
-	
 		lastMove = new int[]{row,col};
 		this.board = new char[8][8];
 		for (int i = 0; i < board.getBoard().length; i++)
