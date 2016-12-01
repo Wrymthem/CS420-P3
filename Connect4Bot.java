@@ -6,8 +6,10 @@ class Connect4Bot {
     private static int nodesChecked =0;
     private static Long start;
     private static Hashtable<Integer, Board> memo;
+    private static boolean defenseMode;
 
-    Connect4Bot(Board board) {
+    Connect4Bot(Board board, boolean defense) {
+    	this.defenseMode = defense;
 		this.board = board;
 		this.possibleBoards = new ArrayList <Board> ();
 		memo = new Hashtable<Integer, Board>();
@@ -83,7 +85,7 @@ class Connect4Bot {
     	if (memo.containsKey(b.getHashCode())&&(memo.get(b.getHashCode()).getTurn()>=depth+1)){
     		alpha = max(alpha, memo.get(b.getHashCode()).getValue());
     		beta = min(alpha, memo.get(b.getHashCode()).getValue());
-    		if (alpha>=beta)
+    		if (alpha<=beta)
     			return memo.get(b.getHashCode());
     	}
     	
@@ -168,6 +170,11 @@ class Connect4Bot {
 			temp[i][j] = board[i][j];
 		return temp;
     }
+
+		public static boolean isDefenseMode() {
+			// TODO Auto-generated method stub
+			return defenseMode;
+		}
 
     /*
     public static void main (String [] args) {

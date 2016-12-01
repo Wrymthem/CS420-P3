@@ -122,6 +122,8 @@ class Board implements Comparable<Board>{
     private int scoreMove(int row, int col) {
 		int score=0;
 		
+		if (Connect4Bot.isDefenseMode())
+			return this.scoreDefense( row, col);
 		
 		
 		//Check to the right
@@ -222,7 +224,146 @@ class Board implements Comparable<Board>{
 
 	
     
-    public boolean checkBoard() {
+    private int scoreDefense(int row, int col) {
+    	int score = 0;
+    	if(board[row][col]=='X'){
+	    	//Check to the right////////////////////////////////////////////////////////
+	    	if(col<SIZE-1)
+	    		if(board[row][col]=='X' && board[row][col+1]=='O')
+	    			score+=5;
+	    	if(col<SIZE-2){
+	    		if(board[row][col]=='X' && board[row][col+1]=='O'&& board[row][col+2]=='O')
+	    			score+=500;
+	    		if(board[row][col]=='0' && board[row][col+1]=='X'&& board[row][col+2]=='O')
+	    			score+=500;
+	    	}
+	    	if(col<SIZE-3){
+	    		if(board[row][col]=='X' && board[row][col+1]=='O'&& board[row][col+2]=='O' && board[row][col+3] == 'O')
+	    			score+=10000;
+	    		if(board[row][col]=='X' && board[row][col+1]=='O'&& board[row][col+2]=='O' && board[row][col+3] == 'X')
+	    			score-=1000;
+	    		}
+	    	//to the left //////////////////////////////////////////////////////////////
+	    	if(col>0)
+	    		if(board[row][col]=='X' && board[row][col-1]=='O')
+	    			score+=5;
+	    	if(col>1){
+	    		if(board[row][col]=='X' && board[row][col-1]=='O'&& board[row][col-2]=='O')
+	    			score+=500;
+	    		if(board[row][col]=='O' && board[row][col-1]=='X'&& board[row][col-2]=='O')
+	    			score+=500;
+	    	}
+	    	if(col>2){
+	    		if(board[row][col]=='X' && board[row][col-1]=='O'&& board[row][col-2]=='O' && board[row][col-3] == 'O')
+	    			score+=10000;
+	    		if(board[row][col]=='X' && board[row][col-1]=='O'&& board[row][col-2]=='O' && board[row][col-3] == 'X')
+	    			score-=1000;
+	    		}
+	    	// Up and DOWN now..... oy ///////////////////////////////////////////////
+	    	
+	    	if(row<SIZE-1)
+	    		if(board[row][col]=='X' && board[row+1][col]=='O')
+	    			score+=5;
+	    	if(row<SIZE-2){
+	    		if(board[row][col]=='X' && board[row+1][col]=='O'&& board[row+2][col]=='O')
+	    			score+=500;
+	    		if(board[row][col]=='0' && board[row+1][col]=='X'&& board[row+2][col]=='O')
+	    			score+=500;
+	    	}
+	    	if(row<SIZE-3){
+	    		if(board[row][col]=='X' && board[row+1][col]=='O'&& board[row+2][col]=='O' && board[row+3][col] == 'O')
+	    			score+=10000;
+	    		if(board[row][col]=='X' && board[row+1][col]=='O'&& board[row+2][col]=='O' && board[row+3][col] == 'X')
+	    			score-=1000;
+	    		}
+	    	////////////////DOWN ./////////////////////////////////////////////////////
+	    	if(row>0)
+	    		if(board[row][col]=='X' && board[row-1][col]=='O')
+	    			score+=5;
+	    	if(row>1){
+	    		if(board[row][col]=='X' && board[row-1][col]=='O'&& board[row-2][col]=='O')
+	    			score+=500;
+	    		if(board[row][col]=='O' && board[row-1][col]=='X'&& board[row-2][col]=='O')
+	    			score+=500;
+	    	}
+	    	if(row>2){
+	    		if(board[row][col]=='X' && board[row-1][col]=='O'&& board[row-2][col]=='O' && board[row-3][col] == 'O')
+	    			score+=10000;
+	    		if(board[row][col]=='X' && board[row-1][col]=='O'&& board[row-2][col]=='O' && board[row-3][col] == 'X')
+	    			score-=1000;
+	    		}
+    	}
+    	else if(board[row][col]=='O'){
+	    	//Check to the right
+	    	if(col<SIZE-1)
+	    		if(board[row][col]=='O' && board[row][col+1]=='O')
+	    			score+=100;
+	    	if(col<SIZE-2){
+	    		if(board[row][col]=='O' && board[row][col+1]=='O'&& board[row][col+2]=='-')
+	    			score+=500;
+	    		if(board[row][col]=='0' && board[row][col+1]=='-'&& board[row][col+2]=='O')
+	    			score+=500;
+	    	}
+	    	if(col<SIZE-3){
+	    		if(board[row][col]=='O' && board[row][col+1]=='O'&& board[row][col+2]=='-' && board[row][col+3] == 'O')
+	    			score+=10000;
+	    		if(board[row][col]=='X' && board[row][col+1]=='O'&& board[row][col+2]=='O' && board[row][col+3] == 'X')
+	    			score-=1000;
+	    		}
+	    	//to the left
+	    	if(col>0)
+	    		if(board[row][col]=='O' && board[row][col-1]=='O')
+	    			score+=100;
+	    	if(col>1){
+	    		if(board[row][col]=='0' && board[row][col-1]=='O'&& board[row][col-2]=='-')
+	    			score+=500;
+	    		if(board[row][col]=='O' && board[row][col-1]=='-'&& board[row][col-2]=='O')
+	    			score+=500;
+	    	}
+	    	if(col>2){
+	    		if(board[row][col]=='0' && board[row][col-1]=='O'&& board[row][col-2]=='-' && board[row][col-3] == 'O')
+	    			score+=10000;
+	    		if(board[row][col]=='X' && board[row][col-1]=='O'&& board[row][col-2]=='O' && board[row][col-3] == 'X')
+	    			score-=1000;
+	    		}
+	    	////UP and down here too
+	    	
+	    	if(row<SIZE-1)
+	    		if(board[row][col]=='O' && board[row+1][col]=='O')
+	    			score+=100;
+	    	if(row<SIZE-2){
+	    		if(board[row][col]=='O' && board[row+1][col]=='O'&& board[row+2][col]=='-')
+	    			score+=500;
+	    		if(board[row][col]=='0' && board[row+1][col]=='-'&& board[row+2][col]=='O')
+	    			score+=500;
+	    	}
+	    	if(row<SIZE-3){
+	    		if(board[row][col]=='O' && board[row+1][col]=='O'&& board[row+2][col]=='-' && board[row+3][col] == 'O')
+	    			score+=10000;
+	    		if(board[row][col]=='X' && board[row+1][col]=='O'&& board[row+2][col]=='O' && board[row+3][col] == 'X')
+	    			score-=1000;
+	    		}
+	    	//to the left
+	    	if(row>0)
+	    		if(board[row][col]=='O' && board[row-1][col]=='O')
+	    			score+=100;
+	    	if(row>1){
+	    		if(board[row][col]=='0' && board[row-1][col]=='O'&& board[row-2][col]=='-')
+	    			score+=500;
+	    		if(board[row][col]=='O' && board[row-1][col]=='-'&& board[row-2][col]=='O')
+	    			score+=500;
+	    	}
+	    	if(row>2){
+	    		if(board[row][col]=='0' && board[row-1][col]=='O'&& board[row-2][col]=='-' && board[row-3][col] == 'O')
+	    			score+=10000;
+	    		if(board[row][col]=='X' && board[row-1][col]=='O'&& board[row-2][col]=='O' && board[row-3][col] == 'X')
+	    			score-=1000;
+	    		}
+    	}
+		return score;
+	}
+
+	public boolean checkBoard() {
 		if (this.checkRow())
 		    return true;
 		if (this.checkColumn())
@@ -363,6 +504,11 @@ class Board implements Comparable<Board>{
     public int getTurn() {
     	return this.turn;
     }
+
+	public void setTurn(int first) {
+		this.turn = first;
+		
+	}
 
     
 }
