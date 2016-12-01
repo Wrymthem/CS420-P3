@@ -122,14 +122,19 @@ class Board implements Comparable<Board>{
     private int scoreMove(int row, int col) {
 		int score=0;
 		
+		
+		
 		//Check to the right
 		if (col<SIZE-1){
 			if (board[row][col+1] == board[row][col]){// 2 in a row
 					score +=10;
 				//check 2 over
 				if (col<SIZE-2){
-					if (board[row][col+2] == board[row][col])//3
+					if (board[row][col+2] == board[row][col]){//3
 						score +=50;
+						if (board[row][col+3] == board[row][col])//4
+							score += 10000;
+					}
 					if (board[row][col+2] == '-')
 						score +=25;
 				}
@@ -147,8 +152,11 @@ class Board implements Comparable<Board>{
 				// 2 in a row
 				score +=10;
 				if (col>1){
-					if (board[row][col-2] == board[row][col])//3
+					if (board[row][col-2] == board[row][col]){//3
 						score +=50;
+						if (board[row][col-3] == board[row][col])//4
+							score += 10000;
+					}
 					if (board[row][col-2] == '-')
 						score +=25;
 				}
@@ -167,8 +175,11 @@ class Board implements Comparable<Board>{
 				// 2 in a row
 					score +=10;
 				if (row<SIZE-2){
-					if (board[row+2][col] == board[row][col])//3
+					if (board[row+2][col] == board[row][col]){//3
 						score +=50;
+						if (board[row+3][col] == board[row][col])//4
+							score += 10000;
+					}
 					if (board[row+2][col] == '-')
 						score +=25;
 				}
@@ -188,8 +199,11 @@ class Board implements Comparable<Board>{
 					// 2 in a row
 					score +=10;
 				if (row>1){
-					if (board[row-2][col] == board[row][col])//3
-						score +=20;
+					if (board[row-2][col] == board[row][col]){//3
+						score +=50;
+						if (board[row-3][col] == board[row][col])//4
+							score += 10000;
+					}
 					if (board[row-2][col] == '-')
 						score +=25;
 				}

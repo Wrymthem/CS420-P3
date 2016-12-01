@@ -28,7 +28,7 @@ class Connect4Bot {
     
         start = System.currentTimeMillis();
     	
-    	for(int i=1;i<64-this.board.getTurn();i++){	
+    	for(int i=1;i<5;i++){	
 	    	if ((System.currentTimeMillis()- start)> 5000){
 				break;
 			}
@@ -86,8 +86,6 @@ class Connect4Bot {
     		if (alpha>=beta)
     			return memo.get(b.getHashCode());
     	}
-    		
-    	
     	
     	if (depth == 0 || b.checkBoard()){ //or some terminal state
     		next = b;
