@@ -2,12 +2,7 @@ import java.util.*;
 
 class Test {
     public static void main (String [] args) {
-    	int first;
-    	
-		if (Integer.parseInt(args[0]) == 1)
-			first = 1;
-		else
-			first = 0;
+		int first = getFirst();
 		
 		Connect4Bot c4b;
 	
@@ -17,7 +12,7 @@ class Test {
 		Board board = new Board();
 		board.initializeBoard();
 	
-		while (!board.checkBoard()) {
+		do {
 		    if (first == 1) {
 		    	board.setPlayer(first);
 			
@@ -136,6 +131,8 @@ class Test {
 				    else
 				    	player = 1;
 				}
+			    if (board.checkBoard())
+			    	break;
 		    }
 		    else {
 		    	board.setPlayer(first);
@@ -256,7 +253,9 @@ class Test {
 				    	player = 1;
 				}
 		    }
-		}
+		    if (board.checkBoard())
+		    	break;
+		}while (true);
 	
 		if (player == 1)
 		    player = 2;
@@ -268,4 +267,47 @@ class Test {
 		System.out.println();
 		System.out.println("Player " + player + " wins!");
     }
+
+	private static int getFirst() {
+		Scanner s = new Scanner(System.in);
+		String answer, choice;
+		int choiceInt;
+		while(true){
+			System.out.println("----------------------------------------");
+			System.out.println(" Would You Like to Play a Game? ");
+			answer = s.nextLine();
+			if (answer.toUpperCase().equals("Y")){
+				System.out.println("Choose from the following options :");
+				System.out.println(" 1. Play Connect 4, computer starts first" );
+				System.out.println(" 2. Play Connect 4, human plays first.");
+				System.out.println(" 3. Global Thermonuclear War. ");
+				System.out.print(" Select :");
+				choice = s.nextLine();
+				try{
+					choiceInt = Integer.parseInt(choice);
+					if (choiceInt == 1){
+						
+						return 1;
+					}
+					else if (choiceInt == 2){
+						
+						return 0;
+					}
+					else if (choiceInt == 3){
+						System.out.println("  Wouldn't you prefer a nice game of Chess? ");
+					}
+					else{
+						System.out.println(" Invalid Entry");
+					}
+				
+				}
+				catch(Exception e){
+					System.out.println("Invalid Entry");
+				}
+				
+			}
+				
+			
+		}
+	}
 }
